@@ -4,6 +4,7 @@ import Home from "./screens/Home"; // Inicio
 import Boards from "./screens/Boards"; // Tableros
 import Team from "./screens/Team"; // Equipo
 import Profile from "./screens/Profile"; // Perfil
+import Map from "./screens/Map";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/boards" element={<Boards />} /> {/* Tableros */}
         <Route path="/team" element={<Team />} /> {/* Equipo */}
         <Route path="/profile" element={<Profile />} /> {/* Perfil */}
+        <Route path="/map" element={<Map />} /> {/* Perfil */}
       </Routes>
     </Layout>
   );
