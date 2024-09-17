@@ -19,7 +19,7 @@ const HeroScreen = ({ titulo, descripcion, imagen }) => {
     >
       {/* Contenedor del texto */}
       <Box sx={{ flex: 1, pr: 3 }}>
-        <Typography variant="h1" gutterBottom>
+        <Typography variant="h2" gutterBottom sx={{ mb: 3 }}>
           {titulo}
         </Typography>
         <Typography variant="h6">
