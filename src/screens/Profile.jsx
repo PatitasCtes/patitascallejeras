@@ -1,40 +1,58 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import HeroScreen from "../components/HeroScreen/HeroScreen";
+import imgSrc from "../assets/profile.png"; // Imagen de perfil, puedes cambiar esta ruta según tu imagen
 
 const Profile = () => {
+  const [profile, setProfile] = useState({
+    name: "Emerson Matijasevic",
+    email: "emerson@example.com",
+    bio: "Desarrollador apasionado por crear soluciones eficientes con tecnologías modernas.",
+  });
+
+  const handleEditProfile = () => {
+    // Lógica de edición de perfil (puedes abrir un modal o hacer algo más)
+    console.log("Editar perfil");
+  };
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        textAlign: "center",
-        bgcolor: "#f5f5f5",
-        p: 3,
-      }}
-    >
-      <Typography variant="h1" gutterBottom sx={{ mb: 3 }}>
-        Perfil
-      </Typography>
-      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-        Seccion Perfil Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-        Fugit placeat voluptatum adipisci enim dolores corrupti suscipit iure,
-        reprehenderit ipsam blanditiis at sequi culpa sed eveniet, ratione
-        architecto ullam, neque praesentium.
-      </Typography>
+    <Box sx={{ p: 3 }}>
+      {/* HeroScreen con información del perfil */}
+      <HeroScreen
+        titulo="Perfil"
+        descripcion="Administra la información de tu perfil."
+        imagen={imgSrc} // Aquí puedes pasar la imagen de perfil
+      />
+
       <Box
         sx={{
-          width: "100%",
-          maxWidth: 1000,
-          height: "60vh",
-          position: "relative",
-          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          mt: 3,
+          p: 3,
+          bgcolor: "#f5f5f5",
           borderRadius: 2,
           boxShadow: 3,
         }}
-      ></Box>
+      >
+        {/* Información del perfil */}
+        <Typography variant="h4" gutterBottom>
+          {profile.name}
+        </Typography>
+        <Typography variant="h6" gutterBottom>
+          {profile.email}
+        </Typography>
+        <Typography variant="body1" gutterBottom sx={{ mb: 3 }}>
+          {profile.bio}
+        </Typography>
+
+        {/* Botón para editar perfil */}
+        <Button variant="contained" color="primary" onClick={handleEditProfile}>
+          Editar Perfil
+        </Button>
+      </Box>
     </Box>
   );
 };
