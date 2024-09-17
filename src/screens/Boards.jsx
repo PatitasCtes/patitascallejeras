@@ -2,13 +2,10 @@ import React, { useState } from "react";
 import { Box, Button } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import CardList from "../components/CardList/CardList";
+import imgSrc from "../assets/board.png";
 
 const Boards = () => {
-  const [boards, setBoards] = useState([
-    { id: 1, name: "Board 1", description: "Description for Board 1" },
-    { id: 2, name: "Board 2", description: "Description for Board 2" },
-    { id: 3, name: "Board 3", description: "Description for Board 3" },
-  ]);
+  const [boards, setBoards] = useState([]);
 
   // Función para eliminar un tablero
   const handleDelete = (id) => {
@@ -36,7 +33,7 @@ const Boards = () => {
       <HeroScreen
         titulo="Tableros"
         descripcion="Administra y organiza tus tableros fácilmente."
-        imagen="https://img.icons8.com/external-flaticons-lineal-color-flat-icons/100/external-boards-office-and-office-supplies-flaticons-lineal-color-flat-icons-2.png"
+        imagen={imgSrc}
       />
       <Button
         variant="contained"
