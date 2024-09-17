@@ -1,40 +1,126 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import CardList from "../components/CardList/CardList";
 import imgSrc from "../assets/board.png";
+import PopupCard from "../components/PopupCard/PopupCard";
+import Loader from "../components/Loader/Loader";
+import Sim from "../components/Sim/Sim";
 
 const Boards = () => {
   const [boards, setBoards] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedBoardId, setSelectedBoardId] = useState(null); // Para manejar la edición
+  const [popupMode, setPopupMode] = useState("create");
+
+  // Función para obtener los tableros desde el API
+  const fetchBoards = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(
+        "https://taskban-boards.netlify.app/.netlify/functions/server/boards"
+      );
+      const data = await response.json();
+      setBoards(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+      setIsError(true);
+      setIsLoading(false);
+    }
+  };
+
+  // Llamar a fetchBoards al montar el componente
+  useEffect(() => {
+    fetchBoards();
+  }, []);
 
   // Función para eliminar un tablero
-  const handleDelete = (id) => {
-    setBoards(boards.filter((board) => board.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await fetch(
+        `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      setBoards(boards.filter((board) => board.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar el tablero:", error);
+    }
   };
 
-  // Función para editar un tablero (placeholder para lógica real)
+  // Función para abrir el popup de edición
   const handleEdit = (id) => {
-    console.log("Editar tablero con id:", id);
+    setSelectedBoardId(id);
+    setPopupMode("edit");
+    setIsPopupOpen(true);
   };
 
-  // Función para agregar un nuevo tablero
+  // Función para abrir el popup de creación
   const handleAdd = () => {
-    const newBoard = {
-      id: boards.length + 1,
-      name: `Board ${boards.length + 1}`,
-      description: `Description for Board ${boards.length + 1}`,
-    };
-    setBoards([...boards, newBoard]);
+    setPopupMode("create");
+    setIsPopupOpen(true);
+  };
+
+  // Función para editar un tablero
+  const handleUpdateBoard = async (id, updatedBoard) => {
+    try {
+      const response = await fetch(
+        `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedBoard),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al actualizar el tablero");
+      }
+
+      await fetchBoards(); // Volver a cargar los tableros actualizados
+    } catch (error) {
+      console.error("Error actualizando el tablero:", error);
+    }
+  };
+
+  // Función para crear un nuevo tablero desde el popup
+  const handleCreateBoard = async (newBoard) => {
+    try {
+      const response = await fetch(
+        "https://taskban-boards.netlify.app/.netlify/functions/server/boards",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newBoard),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al crear el tablero");
+      }
+
+      await fetchBoards(); // Volver a cargar los tableros
+    } catch (error) {
+      console.error("Error creando el tablero:", error);
+    }
   };
 
   return (
     <Box sx={{ p: 3 }}>
-      {/* Aquí pasamos los props a HeroScreen */}
       <HeroScreen
         titulo="Tableros"
         descripcion="Administra y organiza tus tableros fácilmente."
         imagen={imgSrc}
       />
+
       <Button
         variant="contained"
         color="primary"
@@ -43,7 +129,30 @@ const Boards = () => {
       >
         Agregar Nuevo Tablero
       </Button>
-      <CardList boards={boards} onDelete={handleDelete} onEdit={handleEdit} />
+
+      {isLoading ? (
+        <Loader />
+      ) : isError ? (
+        <Sim isFail={true} />
+      ) : (
+        <CardList boards={boards} onDelete={handleDelete} onEdit={handleEdit} />
+      )}
+
+      {/* Popup para crear/editar un tablero */}
+      <PopupCard
+        open={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        itemId={selectedBoardId}
+        mode={popupMode}
+        onCreate={(newBoard) => {
+          handleCreateBoard(newBoard);
+          setIsPopupOpen(false);
+        }}
+        onEdit={(id, updatedBoard) => {
+          handleUpdateBoard(id, updatedBoard);
+          setIsPopupOpen(false);
+        }}
+      />
     </Box>
   );
 };

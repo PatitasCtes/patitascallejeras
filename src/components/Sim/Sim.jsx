@@ -11,7 +11,6 @@ const Sim = ({ isFail }) => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "50vh",
       }}
     >
       <Player
