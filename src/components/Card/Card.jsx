@@ -24,10 +24,10 @@ const Card = ({ board, onDelete, onEdit, onClick }) => {
     >
       <CardContent>
         <Typography variant="h5" component="div">
-          {board.name + " " + getRandomEmoji()}
+          {board.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {board.description}
+          {board.description + " " + getRandomEmoji()}
         </Typography>
       </CardContent>
       <Box sx={{ display: "flex", justifyContent: "space-between", p: 2 }}>
