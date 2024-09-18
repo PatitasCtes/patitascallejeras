@@ -91,6 +91,19 @@ const Boards = () => {
 
   // Función para crear un nuevo tablero desde el popup
   const handleCreateBoard = async (newBoard) => {
+    // Asegúrate de que columns sea un array válido
+    const boardWithColumns = {
+      ...newBoard,
+      columns:
+        newBoard.columns && newBoard.columns.length > 0
+          ? newBoard.columns
+          : [
+              { name: "To Do", description: "Tasks to be done" },
+              { name: "Doing", description: "Tasks in progress" },
+              { name: "Done", description: "Tasks completed" },
+            ],
+    };
+
     try {
       const response = await fetch(
         "https://taskban-boards.netlify.app/.netlify/functions/server/boards",
@@ -99,7 +112,7 @@ const Boards = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(newBoard),
+          body: JSON.stringify(boardWithColumns),
         }
       );
 
