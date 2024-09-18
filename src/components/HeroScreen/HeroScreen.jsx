@@ -15,6 +15,7 @@ const HeroScreen = ({ titulo, descripcion, imagen }) => {
         mb: 3,
         borderRadius: 2,
         boxShadow: 3,
+        flexDirection: { xs: "column", sm: "row" }, // En pantallas pequeñas, coloca el texto e imagen en columna
       }}
     >
       {/* Contenedor del texto */}
@@ -28,7 +29,13 @@ const HeroScreen = ({ titulo, descripcion, imagen }) => {
       </Box>
 
       {/* Contenedor de la imagen */}
-      <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
+      <Box
+        sx={{
+          flex: 1,
+          display: { xs: "none", sm: "flex" }, // Ocultar la imagen en pantallas xs (menor de 600px)
+          justifyContent: "center",
+        }}
+      >
         <img
           src={imagen}
           alt="Imagen del tablero"
