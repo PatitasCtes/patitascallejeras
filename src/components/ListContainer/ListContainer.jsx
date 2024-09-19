@@ -4,19 +4,26 @@ import ColumnWithTasks from "../ColumnWithTasks/ColumnWithTasks";
 
 const ListContainer = ({ boardId }) => {
   const [columns, setColumns] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchColumns = async () => {
+      setLoading(true);
       try {
-        const response = await fetch("tu_api_endpoint");
+        const response = await fetch(
+          `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${boardId}`
+        );
         const data = await response.json();
-        setTasks(data.tasks || []); // Asegúrate de que sea un array
+        setColumns(Array.isArray(data.columns) ? data.columns : []); // Asegúrate de que sea un array
       } catch (error) {
-        console.error("Error fetching tasks:", error);
-        setTasks([]); // En caso de error, establece un array vacío
+        console.error("Error al obtener las columnas:", error);
+        setColumns([]); // Manejar error estableciendo un array vacío
+      } finally {
+        setLoading(false); // Finalizar carga
       }
     };
 
-    fetchTasks();
+    fetchColumns();
   }, [boardId]);
 
   const fetchTasks = async (columnId) => {
@@ -25,15 +32,19 @@ const ListContainer = ({ boardId }) => {
         `https://taskban-task.netlify.app/.netlify/functions/server/tasks?boardId=${boardId}`
       );
       const data = await response.json();
-      return data;
+      return Array.isArray(data) ? data : []; // Asegúrate de que sea un array
     } catch (error) {
       console.error(
         `Error al obtener tareas de la columna ${columnId}:`,
         error
       );
-      return [];
+      return []; // Devuelve un array vacío en caso de error
     }
   };
+
+  if (loading) {
+    return <p>Cargando columnas...</p>; // Mensaje de carga
+  }
 
   return (
     <Box

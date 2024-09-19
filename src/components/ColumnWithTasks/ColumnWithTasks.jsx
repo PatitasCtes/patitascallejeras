@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import CardList from "../CardList/CardList";
 import PopupCard from "../PopupCard/PopupCard";
 
@@ -8,6 +9,7 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupMode, setPopupMode] = useState("create"); // 'create' or 'edit'
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+
   const loadTasks = async () => {
     try {
       const tasks = await fetchTasks(column.id);
@@ -17,12 +19,12 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
       setTasks([]); // Establece un array vacío en caso de error
     }
   };
+
   useEffect(() => {
     loadTasks();
   }, [boardId, column.id, fetchTasks]);
 
   const handleCreateTask = async (taskDetails) => {
-    // Lógica para crear una nueva tarea usando la API
     const response = await fetch(
       `https://taskban-task.netlify.app/.netlify/functions/server/tasks`,
       {
@@ -36,14 +38,11 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
 
     if (response.ok) {
       setPopupOpen(false);
-      // Recargar las tareas después de la creación
-      const tasks = await fetchTasks(column.id);
-      setTasks(tasks);
+      loadTasks(); // Recargar las tareas después de la creación
     }
   };
 
   const handleEditTask = async (taskId, taskDetails) => {
-    // Lógica para editar una tarea usando la API
     const response = await fetch(
       `https://taskban-task.netlify.app/.netlify/functions/server/tasks/${taskId}`,
       {
@@ -57,14 +56,11 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
 
     if (response.ok) {
       setPopupOpen(false);
-      // Recargar las tareas después de la edición
-      const tasks = await fetchTasks(column.id);
-      setTasks(tasks);
+      loadTasks(); // Recargar las tareas después de la edición
     }
   };
 
   const handleDeleteTask = async (taskId) => {
-    // Lógica para eliminar una tarea usando la API
     const response = await fetch(
       `https://taskban-task.netlify.app/.netlify/functions/server/tasks/${taskId}`,
       {
@@ -73,9 +69,7 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
     );
 
     if (response.ok) {
-      // Recargar las tareas después de la eliminación
-      const tasks = await fetchTasks(column.id);
-      setTasks(tasks);
+      loadTasks(); // Recargar las tareas después de la eliminación
     }
   };
 
@@ -89,25 +83,26 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
         backgroundColor: "#f9f9f9",
       }}
     >
-      <Typography variant="h6" align="center" gutterBottom>
-        {column.name}
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          setPopupMode("create");
-          setPopupOpen(true);
-        }}
+      <Box
+        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        Crear Nueva Tarea
-      </Button>
+        <Typography variant="h6" align="center" gutterBottom>
+          {column.name}
+        </Typography>
+        <IconButton
+          color="primary"
+          onClick={() => {
+            setPopupMode("create");
+            setPopupOpen(true);
+          }}
+        >
+          <AddIcon />
+        </IconButton>
+      </Box>
 
       <CardList
-        boards={tasks}
-        onDelete={(taskId) => {
-          handleDeleteTask(taskId);
-        }}
+        tasks={tasks}
+        onDelete={handleDeleteTask}
         onEdit={(taskId) => {
           setSelectedTaskId(taskId);
           setPopupMode("edit");
