@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import imgSrc from "../assets/board.png";
-import PopupCard from "../components/PopupCard/PopupCard";
+import PopupBoard from "../components/PopupBoard/PopupBoard";
 import Loader from "../components/Loader/Loader";
 import Sim from "../components/Sim/Sim";
 import BoardList from "../components/BoardList/BoardList";
@@ -156,7 +156,7 @@ const Boards = () => {
       )}
 
       {/* Popup para crear/editar un tablero */}
-      <PopupCard
+      <PopupBoard
         open={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
         itemId={selectedBoardId}

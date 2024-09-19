@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
-import CardList from "../components/CardList/CardList";
+
 import imgSrc from "../assets/team.png";
 
 const Team = () => {
@@ -37,8 +37,6 @@ const Team = () => {
       >
         Agregar Nuevo Equipo
       </Button>
-      <CardList boards={teams} onDelete={handleDelete} onEdit={() => {}} />{" "}
-      {/* Reutiliza CardList */}
     </Box>
   );
 };

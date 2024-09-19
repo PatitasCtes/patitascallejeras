@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationData from "./loader.json";
+import animationData from "./taskloader.json";
 
-const Loader = () => {
+const TaskLoader = () => {
   return (
     <Box
       sx={{
@@ -28,4 +28,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default TaskLoader;

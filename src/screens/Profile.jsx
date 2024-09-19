@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import imgSrc from "../assets/profile.png"; // Imagen de perfil, puedes cambiar esta ruta según tu imagen
@@ -8,7 +8,37 @@ const Profile = () => {
     name: "Emerson Matijasevic",
     email: "emerson@example.com",
     bio: "Desarrollador apasionado por crear soluciones eficientes con tecnologías modernas.",
+    photoURL: imgSrc, // Imagen de perfil por defecto
   });
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const teamId = "123456"; // Hardcodeando el teamId
+      try {
+        const response = await fetch(
+          `https://taskban-user.netlify.app/.netlify/functions/server/users?teamId=${teamId}`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            const user = data[0]; // Suponiendo que quieres el primer usuario
+            setProfile({
+              name: user.name,
+              email: user.email,
+              bio: user.description,
+              photoURL: user.photoURL, // Actualiza la URL de la foto
+            });
+          }
+        } else {
+          console.error("Error fetching user profile:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleEditProfile = () => {
     // Lógica de edición de perfil (puedes abrir un modal o hacer algo más)
@@ -21,7 +51,7 @@ const Profile = () => {
       <HeroScreen
         titulo="Perfil"
         descripcion="Administra la información de tu perfil."
-        imagen={imgSrc} // Aquí puedes pasar la imagen de perfil
+        imagen={profile.photoURL} // Aquí se pasa la imagen del perfil
       />
 
       <Box

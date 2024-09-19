@@ -1,28 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CardList from "../CardList/CardList";
 import PopupCard from "../PopupCard/PopupCard";
+import Sim from "../Sim/Sim";
 
-const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
-  const [tasks, setTasks] = useState([]);
+const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const [popupMode, setPopupMode] = useState("create"); // 'create' or 'edit'
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-
-  const loadTasks = async () => {
-    try {
-      const tasks = await fetchTasks(column.id);
-      setTasks(Array.isArray(tasks) ? tasks : []); // Verifica que sea un array
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-      setTasks([]); // Establece un array vacío en caso de error
-    }
-  };
-
-  useEffect(() => {
-    loadTasks();
-  }, [boardId, column.id, fetchTasks]);
+  const [isFail, setIsFail] = useState(false); // Estado para manejar el fallo
 
   const handleCreateTask = async (taskDetails) => {
     const response = await fetch(
@@ -32,13 +19,31 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...taskDetails, boardId: column.id }),
+        body: JSON.stringify({
+          name: taskDetails.name,
+          description: taskDetails.description,
+          boardId: boardId, // Usando el boardId pasado como prop
+          columnId: column.id, // Usando el columnId
+          createdUser: "1KfJzumzPqNG1bZumZiE", // Hardcodeado para el usuario que crea
+          createdDate: new Date().toISOString(), // Fecha de creación actual
+          tutorUser: taskDetails.tutor, // Usando el tutor del taskDetails
+          status: taskDetails.status || "in progress", // Valor por defecto
+          points: taskDetails.points || 0, // Valor por defecto
+          estimatedStartDate: taskDetails.startDate, // Usando startDate del taskDetails
+          estimatedFinishDate: taskDetails.endDate, // Usando endDate del taskDetails
+          userAssigned: taskDetails.userAssigned, // Usando el nombre del usuario asignado
+          userInvolved: JSON.stringify(taskDetails.involvedUsers), // Convertir a JSON
+        }),
       }
     );
 
     if (response.ok) {
       setPopupOpen(false);
-      loadTasks(); // Recargar las tareas después de la creación
+      setIsFail(false); // Reseteamos el estado de fallo
+      reloadTasks(); // Recargar las tareas desde el componente padre
+    } else {
+      console.error("Error al crear la tarea:", response.statusText);
+      setIsFail(true); // Establecemos el estado de fallo
     }
   };
 
@@ -56,7 +61,7 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
 
     if (response.ok) {
       setPopupOpen(false);
-      loadTasks(); // Recargar las tareas después de la edición
+      reloadTasks(); // Recargar las tareas desde el componente padre
     }
   };
 
@@ -69,7 +74,7 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
     );
 
     if (response.ok) {
-      loadTasks(); // Recargar las tareas después de la eliminación
+      reloadTasks(); // Recargar las tareas desde el componente padre
     }
   };
 
@@ -99,6 +104,8 @@ const ColumnWithTasks = ({ boardId, column, fetchTasks }) => {
           <AddIcon />
         </IconButton>
       </Box>
+
+      {isFail && <Sim isFail={true} />}
 
       <CardList
         tasks={tasks}

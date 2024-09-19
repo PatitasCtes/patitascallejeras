@@ -1,14 +1,26 @@
 import React from "react";
-import { Box, Container } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import Card from "../Card/Card";
-import Sim from "../Sim/Sim";
+import getRandomEmoji from "../../utils/getRandomEmoji";
 
 const CardList = ({ tasks, onDelete, onEdit }) => {
   return (
     <Container>
       <Box sx={{ maxHeight: "80vh", overflowY: "auto", padding: 2 }}>
         {tasks.length === 0 ? (
-          <Sim isFail={false} />
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+            }}
+          >
+            <Typography variant="h6" align="center" gutterBottom>
+              {getRandomEmoji()}
+            </Typography>
+          </Box>
         ) : (
           tasks.map((task) => (
             <Card

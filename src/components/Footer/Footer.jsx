@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { AppBar, IconButton, Toolbar, Typography, Box } from "@mui/material";
 import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import LanguageIcon from "@mui/icons-material/Language";
 import { useTheme } from "@mui/material/styles";
 import Tracks from "../Tracks/Tracks";
+import Ok from "../Ok/Ok";
 
 const Footer = () => {
   const theme = useTheme();
@@ -20,7 +19,7 @@ const Footer = () => {
 
   return (
     <>
-      {showLottie && <Tracks />}
+      {showLottie && <Ok />}
       <AppBar
         position="static"
         sx={{
