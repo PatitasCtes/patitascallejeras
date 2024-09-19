@@ -3,7 +3,7 @@ import { Box, Button } from "@mui/material";
 import { useParams } from "react-router-dom"; // Importar useParams
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import Loader from "../components/Loader/Loader";
-import ListContainer from "../components/ListContainer/ListContainer";
+import ListContainer from "../components/ColumnContainer/ColumnContainer";
 import imgSrc from "../assets/cartelera3.jpeg";
 
 const Board = () => {
