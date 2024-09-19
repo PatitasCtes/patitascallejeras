@@ -47,7 +47,6 @@ const Board = () => {
       ) : isError ? (
         <Sim isFail={true} />
       ) : (
-        // Mostrar HeroScreen con los detalles del tablero
         <HeroScreen
           titulo={board?.name || "Tablero"}
           descripcion={board?.description || "Sin descripción"}
@@ -64,7 +63,7 @@ const Board = () => {
         Agregar Nueva Lista
       </Button>
 
-      <ListContainer />
+      <ListContainer boardId={id} />
     </Box>
   );
 };
