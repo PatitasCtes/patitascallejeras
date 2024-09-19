@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
-import CardList from "../components/CardList/CardList";
 import imgSrc from "../assets/board.png";
 import PopupCard from "../components/PopupCard/PopupCard";
 import Loader from "../components/Loader/Loader";
 import Sim from "../components/Sim/Sim";
+import BoardList from "../components/BoardList/BoardList";
 
 const Boards = () => {
   const [boards, setBoards] = useState([]);
@@ -98,9 +98,9 @@ const Boards = () => {
         newBoard.columns && newBoard.columns.length > 0
           ? newBoard.columns
           : [
-              { name: "To Do", description: "Tasks to be done" },
-              { name: "Doing", description: "Tasks in progress" },
-              { name: "Done", description: "Tasks completed" },
+              { id: 1, name: "To Do", description: "Tasks to be done" },
+              { id: 2, name: "Doing", description: "Tasks in progress" },
+              { id: 3, name: "Done", description: "Tasks completed" },
             ],
     };
 
@@ -148,7 +148,11 @@ const Boards = () => {
       ) : isError ? (
         <Sim isFail={true} />
       ) : (
-        <CardList boards={boards} onDelete={handleDelete} onEdit={handleEdit} />
+        <BoardList
+          boards={boards}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
+        />
       )}
 
       {/* Popup para crear/editar un tablero */}
