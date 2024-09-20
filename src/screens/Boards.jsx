@@ -15,12 +15,17 @@ const Boards = () => {
   const [selectedBoardId, setSelectedBoardId] = useState(null); // Para manejar la edición
   const [popupMode, setPopupMode] = useState("create");
 
+  // Obtener el teamId desde localStorage
+  const teamId = localStorage.getItem("teamId");
+
   // Función para obtener los tableros desde el API
   const fetchBoards = async () => {
     setIsLoading(true);
+    const teamId = localStorage.getItem("teamId"); // Obtener el teamId desde localStorage
+
     try {
       const response = await fetch(
-        "https://taskban-boards.netlify.app/.netlify/functions/server/boards"
+        `https://taskban-boards.netlify.app/.netlify/functions/server/boards?teamId=${teamId}` // Incluir teamId en la consulta
       );
       const data = await response.json();
       setBoards(data);
@@ -91,9 +96,10 @@ const Boards = () => {
 
   // Función para crear un nuevo tablero desde el popup
   const handleCreateBoard = async (newBoard) => {
-    // Asegúrate de que columns sea un array válido
-    const boardWithColumns = {
+    // Asegurarse de incluir el teamId y que columns sea un array válido
+    const boardWithTeamId = {
       ...newBoard,
+      teamId, // Agregar el teamId desde localStorage
       columns:
         newBoard.columns && newBoard.columns.length > 0
           ? newBoard.columns
@@ -112,7 +118,7 @@ const Boards = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(boardWithColumns),
+          body: JSON.stringify(boardWithTeamId),
         }
       );
 

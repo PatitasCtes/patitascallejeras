@@ -21,7 +21,7 @@ const Ok = () => {
         style={{ height: "150px", width: "150px" }}
       />
       <Typography variant="h6" sx={{ mt: 2 }}>
-        Muy bien!!
+        Empecemos!!
       </Typography>
     </Box>
   );

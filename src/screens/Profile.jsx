@@ -41,7 +41,7 @@ const Profile = ({ profileUid, isEditable }) => {
   const [uploading, setUploading] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
-
+  const storedTeamId = localStorage.getItem("teamId");
   useEffect(() => {
     const fetchUserProfileAndTasks = async () => {
       try {
@@ -79,17 +79,53 @@ const Profile = ({ profileUid, isEditable }) => {
     setIsEditing((prev) => !prev);
   };
 
-  const handleSaveProfile = async (downloadURL) => {
+  const handleSaveProfile = async () => {
     const userId = profile.id; // Asegúrate de usar el ID correcto
     const updatedProfile = {
       email: profile.email,
       name: profile.name,
       userUID: profileUid,
       isAdmin: false,
-      photoURL: downloadURL,
       description: profile.bio,
       rol: profile.role,
-      teamId: "123456",
+      teamId: storedTeamId,
+      UID: profileUid,
+    };
+
+    try {
+      const response = await fetch(
+        `https://taskban-user.netlify.app/.netlify/functions/server/users/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedProfile),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Perfil guardado correctamente");
+        setIsEditing(false);
+      } else {
+        console.error("Error al guardar el perfil:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error al enviar la solicitud PUT:", error);
+    }
+  };
+
+  const handleSavePhotoProfile = async (URL) => {
+    const userId = profile.id; // Asegúrate de usar el ID correcto
+    const updatedProfile = {
+      email: profile.email,
+      name: profile.name,
+      userUID: profileUid,
+      isAdmin: false,
+      photoURL: URL,
+      description: profile.bio,
+      rol: profile.role,
+      teamId: storedTeamId,
       UID: profileUid,
     };
 
@@ -161,8 +197,7 @@ const Profile = ({ profileUid, isEditable }) => {
               { merge: true }
             );
 
-            // Llamar a handleSaveProfile para actualizar el perfil
-            await handleSaveProfile(downloadURL);
+            await handleSavePhotoProfile(downloadURL);
 
             setUploading(false);
           }

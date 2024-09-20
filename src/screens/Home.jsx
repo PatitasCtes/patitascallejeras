@@ -19,13 +19,13 @@ const Home = () => {
         TaskBan®
       </Typography>
       <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-        Bienvenido a la mejor compañia de la organización.
+        Bienvenido a la mejor compañía de la organización.
       </Typography>
       <Box
         sx={{
           width: "100%",
           maxWidth: 1000,
-          height: "60vh",
+          height: 400, // Cambiado a 400 px
           position: "relative",
           overflow: "hidden",
           borderRadius: 2,
@@ -34,7 +34,22 @@ const Home = () => {
           backgroundSize: "contain",
           backgroundPosition: "center",
         }}
-      ></Box>
+      >
+        <iframe
+          src="https://www.youtube.com/embed/iBFxMTEEM2g?autoplay=1&mute=1&loop=1&playlist=iBFxMTEEM2g"
+          title="Background Video"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            border: "none",
+            pointerEvents: "none", // Para evitar la interacción con el iframe
+          }}
+          allow="autoplay; encrypted-media"
+        ></iframe>
+      </Box>
     </Box>
   );
 };
