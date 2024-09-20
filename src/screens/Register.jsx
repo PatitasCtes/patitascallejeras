@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { auth } from "../api/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import Ok from "../components/Ok/Ok";
+import PopupLoader from "../components/PopupLoader/PopupLoader";
+import LoopOk from "../components/LoopOk/LoopOk";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -11,10 +12,12 @@ const Register = () => {
   const [description, setDescription] = useState("");
   const [teamId, setTeamId] = useState(""); // Nuevo estado para teamId
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Estado para manejar el popup
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError(""); // Resetea el error antes de intentar registrar
+    setError("");
+    setLoading(true); // Mostrar popup
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -24,7 +27,7 @@ const Register = () => {
       );
       const user = userCredential.user;
 
-      let finalTeamId = teamId; // Asignar el teamId inicial
+      let finalTeamId = teamId;
 
       // Si el teamId está vacío, crear un nuevo equipo
       if (!teamId) {
@@ -33,11 +36,10 @@ const Register = () => {
           name: newTeamName,
           description: `Equipo creado por ${name}`,
           createdDate: new Date().toISOString(),
-          quantityMembers: 1, // Puedes ajustar esto según sea necesario
+          quantityMembers: 1,
           isActive: true,
         };
 
-        // Intentar crear el nuevo equipo en el servidor
         const teamResponse = await fetch(
           "https://taskban-team.netlify.app/.netlify/functions/server/teams",
           {
@@ -54,7 +56,7 @@ const Register = () => {
         }
 
         const teamResult = await teamResponse.json();
-        finalTeamId = teamResult.teamId; // Asignar el teamId del equipo creado
+        finalTeamId = teamResult.teamId;
       }
 
       const userData = {
@@ -64,12 +66,11 @@ const Register = () => {
         photoURL: "",
         isAdmin: false,
         rol: "developer",
-        teamId: finalTeamId, // Usar el teamId final
+        teamId: finalTeamId,
         name: name,
         description: description,
       };
 
-      // Intentar guardar el usuario en el servidor
       const response = await fetch(
         "https://taskban-user.netlify.app/.netlify/functions/server/users",
         {
@@ -85,12 +86,14 @@ const Register = () => {
         throw new Error("No se pudo crear el usuario en el servidor.");
       }
 
-      // Guardar el UID y el teamId en localStorage y redirigir
+      // Guardar UID y teamId en localStorage y redirigir
       localStorage.setItem("uid", user.uid);
-      localStorage.setItem("teamId", finalTeamId); // Guardar el teamId en localStorage
-      window.location.href = "/login"; // Redirigir al login
+      localStorage.setItem("teamId", finalTeamId);
+      window.location.href = "/login";
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false); // Cerrar popup
     }
   };
 
@@ -107,11 +110,11 @@ const Register = () => {
         p: 3,
       }}
     >
-      <Typography variant="h2" gutterBottom sx={{ mb: 3 }}>
+      <Typography variant="h2" gutterBottom sx={{ mb: 2 }}>
         Registrarse
       </Typography>
       {error && <Typography color="error">{error}</Typography>}
-      {!error && <Ok />}
+
       <form onSubmit={handleRegister} style={{ width: "100%", maxWidth: 400 }}>
         <TextField
           label="Nombre"
@@ -158,6 +161,9 @@ const Register = () => {
           Registrar
         </Button>
       </form>
+      <LoopOk />
+      {/* Mostrar el PopupLoader si loading es true */}
+      <PopupLoader open={loading} handleClose={() => setLoading(false)} />
     </Box>
   );
 };

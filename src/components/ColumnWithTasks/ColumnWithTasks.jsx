@@ -1,6 +1,16 @@
 import React, { useState } from "react";
-import { Box, Typography, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CardList from "../CardList/CardList";
 import PopupCard from "../PopupCard/PopupCard";
 import Sim from "../Sim/Sim";
@@ -10,6 +20,7 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
   const [popupMode, setPopupMode] = useState("create"); // 'create' or 'edit'
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const [isFail, setIsFail] = useState(false); // Estado para manejar el fallo
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false); // Estado para el diálogo de confirmación
 
   const handleCreateTask = async (taskDetails) => {
     const response = await fetch(
@@ -78,6 +89,26 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
     }
   };
 
+  const handleDeleteColumn = async () => {
+    const response = await fetch(
+      `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${boardId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          columns: columns.filter((col) => col.id !== column.id), // Filtra la columna a eliminar
+        }),
+      }
+    );
+
+    if (response.ok) {
+      reloadTasks(); // Recargar las tareas desde el componente padre
+    }
+    setConfirmDialogOpen(false); // Cerrar el diálogo de confirmación
+  };
+
   return (
     <Box
       sx={{
@@ -93,6 +124,12 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
       >
         <Typography variant="h6" align="center" gutterBottom>
           {column.name}
+          <IconButton
+            color="error"
+            onClick={() => setConfirmDialogOpen(true)} // Abrir el diálogo de confirmación
+          >
+            <DeleteIcon />
+          </IconButton>
         </Typography>
         <IconButton
           color="primary"
@@ -126,6 +163,27 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
         onEdit={handleEditTask}
         onDelete={handleDeleteTask}
       />
+
+      {/* Diálogo de Confirmación */}
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
+        <DialogTitle>Eliminar Columna</DialogTitle>
+        <DialogContent>
+          <Typography>
+            ¿Estás seguro de que deseas eliminar esta columna?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleDeleteColumn} color="error">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

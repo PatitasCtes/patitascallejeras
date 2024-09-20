@@ -55,7 +55,7 @@ const Navigationbar = () => {
             <img src="/logo-arg.png" width={50} alt="Logo"></img>
           </a>
           <Typography variant="h6" pl={3} flexGrow={1}>
-            ᓚTask ᓚBan
+            ᓚTaskBan
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navLinks.map((item) => (

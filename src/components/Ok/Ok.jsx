@@ -11,7 +11,7 @@ const Ok = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "50vh",
+        height: "20vh",
       }}
     >
       <Player

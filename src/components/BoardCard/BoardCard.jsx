@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import getRandomEmoji from "../../utils/getRandomEmoji";
+import { getRandomEmoji } from "../../utils/getRandomEmoji";
 
 const BoardCard = ({ board, onDelete, onEdit, onClick }) => {
   return (

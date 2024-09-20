@@ -11,6 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
+import TaskLoader from "../components/TaskLoader/TaskLoader";
 import UserAvatar from "../components/UserAvatar/UserAvatar";
 import imgSrc from "../assets/team.png";
 
@@ -51,7 +52,7 @@ const Team = () => {
 
   const handleChangeTeam = async () => {
     if (newTeamId) {
-      const userId = localStorage.getItem("uid");
+      const userId = localStorage.getItem("userId");
       const response = await fetch(
         `https://taskban-user.netlify.app/.netlify/functions/server/users/${userId}`,
         {
@@ -65,7 +66,7 @@ const Team = () => {
 
       if (response.ok) {
         localStorage.setItem("teamId", newTeamId);
-        window.location.reload();
+        // window.location.reload();
       } else {
         alert("Failed to change team.");
       }
@@ -117,7 +118,7 @@ const Team = () => {
           {users.length > 0 ? (
             users.map((user) => (
               <ListItem
-                key={user.UID}
+                key={user.id}
                 sx={{ display: "flex", alignItems: "center" }}
               >
                 <UserAvatar src={user.photoURL} size={30} />
@@ -128,7 +129,7 @@ const Team = () => {
               </ListItem>
             ))
           ) : (
-            <Typography>No hay usuarios en este equipo.</Typography>
+            <TaskLoader />
           )}
         </List>
       </Box>
