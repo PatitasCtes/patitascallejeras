@@ -13,9 +13,12 @@ import {
   FormControl,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 const PopupCard = ({
   open,
@@ -27,6 +30,7 @@ const PopupCard = ({
   onDelete,
   children, // Additional content
 }) => {
+  const teamId = localStorage.getItem("teamId");
   const [itemDetails, setItemDetails] = useState({
     name: "",
     description: "",
@@ -37,8 +41,21 @@ const PopupCard = ({
     tutor: "",
     involvedUsers: [],
   });
-  const [isEditing, setIsEditing] = useState(false);
   const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    // Cargar usuarios del teamId
+    fetch(
+      `https://taskban-user.netlify.app/.netlify/functions/server/users?teamId=${teamId}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+  }, [teamId]);
 
   useEffect(() => {
     if (itemId && mode === "edit") {
@@ -57,7 +74,6 @@ const PopupCard = ({
             tutor: data.tutor || "",
             involvedUsers: data.involvedUsers || [],
           });
-          setIsEditing(true);
         })
         .catch((error) => {
           console.error("Error fetching item details:", error);
@@ -73,24 +89,8 @@ const PopupCard = ({
         tutor: "",
         involvedUsers: [],
       });
-      setIsEditing(true);
-    } else {
-      setIsEditing(false);
     }
   }, [itemId, mode]);
-
-  useEffect(() => {
-    fetch(
-      "https://taskban-user.netlify.app/.netlify/functions/server/users?teamId=123456"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-      });
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -100,7 +100,17 @@ const PopupCard = ({
     }));
   };
 
+  const handlePointsChange = (change) => {
+    setItemDetails((prevDetails) => ({
+      ...prevDetails,
+      points: Math.max(0, prevDetails.points + change),
+    }));
+  };
+
   const handleSubmit = () => {
+    const tutorUser = users.find((user) => user.id === itemDetails.tutor);
+    itemDetails.userAssigned = tutorUser ? tutorUser.name : ""; // Asigna el nombre del tutor
+
     if (mode === "create") {
       onCreate(itemDetails);
     } else if (mode === "edit") {
@@ -116,7 +126,6 @@ const PopupCard = ({
 
   const handleClose = () => {
     onClose();
-    setIsEditing(false);
   };
 
   return (
@@ -145,7 +154,6 @@ const PopupCard = ({
               onChange={handleInputChange}
               fullWidth
               margin="normal"
-              disabled={!isEditing}
             />
 
             <TextField
@@ -157,49 +165,52 @@ const PopupCard = ({
               multiline
               rows={4}
               margin="normal"
-              disabled={!isEditing}
             />
 
-            <TextField
-              label="Puntos"
-              name="points"
-              type="number"
-              value={itemDetails.points}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              disabled={!isEditing}
-            />
+            <Box display="flex" alignItems="center" margin="normal">
+              <IconButton onClick={() => handlePointsChange(-1)}>
+                <RemoveIcon />
+              </IconButton>
+              <TextField
+                label="Puntos"
+                name="points"
+                type="number"
+                value={itemDetails.points}
+                onChange={handleInputChange}
+                fullWidth
+                margin="normal"
+                inputProps={{ min: 0 }}
+              />
+              <IconButton onClick={() => handlePointsChange(1)}>
+                <AddIcon />
+              </IconButton>
+            </Box>
 
-            <DatePicker
-              label="Fecha de Inicio"
-              value={itemDetails.startDate}
-              onChange={(newValue) => {
-                setItemDetails((prevDetails) => ({
-                  ...prevDetails,
-                  startDate: newValue,
-                }));
-              }}
-              renderInput={(params) => (
-                <TextField {...params} fullWidth margin="normal" />
-              )}
-              disabled={!isEditing}
-            />
+            <Box display="flex" justifyContent="center" gap={2} marginY={2}>
+              <DatePicker
+                label="Fecha de Inicio"
+                value={itemDetails.startDate}
+                onChange={(newValue) => {
+                  setItemDetails((prevDetails) => ({
+                    ...prevDetails,
+                    startDate: newValue,
+                  }));
+                }}
+                renderInput={(params) => <TextField {...params} fullWidth />}
+              />
 
-            <DatePicker
-              label="Fecha de Fin"
-              value={itemDetails.endDate}
-              onChange={(newValue) => {
-                setItemDetails((prevDetails) => ({
-                  ...prevDetails,
-                  endDate: newValue,
-                }));
-              }}
-              renderInput={(params) => (
-                <TextField {...params} fullWidth margin="normal" />
-              )}
-              disabled={!isEditing}
-            />
+              <DatePicker
+                label="Fecha de Fin"
+                value={itemDetails.endDate}
+                onChange={(newValue) => {
+                  setItemDetails((prevDetails) => ({
+                    ...prevDetails,
+                    endDate: newValue,
+                  }));
+                }}
+                renderInput={(params) => <TextField {...params} fullWidth />}
+              />
+            </Box>
 
             <FormControl fullWidth margin="normal">
               <InputLabel>Status</InputLabel>
@@ -207,7 +218,6 @@ const PopupCard = ({
                 name="status"
                 value={itemDetails.status}
                 onChange={handleInputChange}
-                disabled={!isEditing}
               >
                 <MenuItem value="Activa">Activa</MenuItem>
                 <MenuItem value="En espera">En espera</MenuItem>
@@ -221,7 +231,6 @@ const PopupCard = ({
                 name="tutor"
                 value={itemDetails.tutor}
                 onChange={handleInputChange}
-                disabled={!isEditing}
               >
                 {users.map((user) => (
                   <MenuItem key={user.id} value={user.id}>
@@ -245,7 +254,6 @@ const PopupCard = ({
                   }));
                 }}
                 multiple
-                disabled={!isEditing}
               >
                 {users.map((user) => (
                   <MenuItem key={user.id} value={user.id}>
