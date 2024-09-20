@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import getRandomEmoji from "../../utils/getRandomEmoji.js";
+import { getRandomEmoji } from "../../utils/getRandomEmoji.js";
 
 const HeroScreen = ({ titulo, descripcion, imagen }) => {
   return (

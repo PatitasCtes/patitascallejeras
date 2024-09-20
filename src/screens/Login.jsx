@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { auth } from "../api/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Inicializar useNavigate
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,7 +20,20 @@ const Login = () => {
       );
       const user = userCredential.user;
       localStorage.setItem("uid", user.uid); // Guardar UID en localStorage
-      window.location.href = "/"; // Redirigir al inicio
+
+      // Hacer fetch para recuperar el userId usando el UID
+      const response = await fetch(
+        `https://taskban-user.netlify.app/.netlify/functions/server/users/uid/${user.uid}`
+      );
+      const userData = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("userId", userData.id); // Guardar userId en localStorage
+        localStorage.setItem("teamId", userData.teamId);
+        window.location.href = "/"; // Redirigir al inicio
+      } else {
+        setError("Error al obtener el ID del usuario.");
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -43,12 +56,17 @@ const Login = () => {
         p: 3,
       }}
     >
-      <Typography variant="h2" gutterBottom sx={{ mb: 3 }}>
+      <Typography
+        variant="h2"
+        gutterBottom
+        sx={{ mb: 3, color: "primary.main" }}
+      >
         TaskBan®
       </Typography>
       <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
         Bienvenido a la mejor compañía de la organización.
       </Typography>
+
       {error && <Typography color="error">{error}</Typography>}
       <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: 400 }}>
         <TextField

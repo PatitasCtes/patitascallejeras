@@ -11,6 +11,7 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Alert,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
@@ -42,6 +43,7 @@ const PopupCard = ({
     involvedUsers: [],
   });
   const [users, setUsers] = useState([]);
+  const [error, setError] = useState(""); // Estado para manejar errores
 
   useEffect(() => {
     // Cargar usuarios del teamId
@@ -108,6 +110,19 @@ const PopupCard = ({
   };
 
   const handleSubmit = () => {
+    // Validación de campos obligatorios
+    if (
+      !itemDetails.name ||
+      !itemDetails.description ||
+      !itemDetails.tutor ||
+      itemDetails.points <= 0
+    ) {
+      setError("Por favor, complete todos los campos obligatorios.");
+      return;
+    }
+
+    setError(""); // Resetear el error
+
     const tutorUser = users.find((user) => user.id === itemDetails.tutor);
     itemDetails.userAssigned = tutorUser ? tutorUser.name : ""; // Asigna el nombre del tutor
 
@@ -140,11 +155,10 @@ const PopupCard = ({
         >
           <CloseIcon />
         </IconButton>
-
         <Typography variant="h6" gutterBottom>
           {mode === "create" ? "Crear uno Nuevo!" : "Editar"}
         </Typography>
-
+        {error && <Alert severity="error">{error}</Alert>} {/* Mostrar error */}
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Box>
             <TextField
@@ -154,6 +168,7 @@ const PopupCard = ({
               onChange={handleInputChange}
               fullWidth
               margin="normal"
+              required
             />
 
             <TextField
@@ -165,6 +180,7 @@ const PopupCard = ({
               multiline
               rows={4}
               margin="normal"
+              required
             />
 
             <Box display="flex" alignItems="center" margin="normal">
@@ -179,7 +195,8 @@ const PopupCard = ({
                 onChange={handleInputChange}
                 fullWidth
                 margin="normal"
-                inputProps={{ min: 0 }}
+                inputProps={{ min: 1 }} // Cambiado para requerir al menos 1
+                required
               />
               <IconButton onClick={() => handlePointsChange(1)}>
                 <AddIcon />
@@ -231,6 +248,7 @@ const PopupCard = ({
                 name="tutor"
                 value={itemDetails.tutor}
                 onChange={handleInputChange}
+                required
               >
                 {users.map((user) => (
                   <MenuItem key={user.id} value={user.id}>

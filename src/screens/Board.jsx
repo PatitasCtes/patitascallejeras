@@ -60,7 +60,7 @@ const Board = () => {
         sx={{ mb: 3 }}
         onClick={handleAdd}
       >
-        Agregar Nueva Lista
+        Agregar Columna
       </Button>
 
       <ListContainer boardId={id} />

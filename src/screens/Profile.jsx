@@ -7,7 +7,12 @@ import {
   Grid,
   IconButton,
   CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
+
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import imgSrc from "../assets/profile.png";
@@ -39,11 +44,12 @@ const Profile = ({ profileUid, isEditable }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
   const isMobile = useMediaQuery("(max-width:600px)");
   const navigate = useNavigate();
   const storedTeamId = localStorage.getItem("teamId");
   useEffect(() => {
-    const fetchUserProfileAndTasks = async () => {
+    const fetchUserProfile = async () => {
       try {
         const response = await fetch(
           `https://taskban-user.netlify.app/.netlify/functions/server/users/uid/${profileUid}`
@@ -58,22 +64,44 @@ const Profile = ({ profileUid, isEditable }) => {
             photoURL: data.photoURL || imgSrc,
             id: data.id,
           });
-          setTasks(data.tasks || []);
         } else {
-          console.error(
-            "Error fetching user profile and tasks:",
-            response.statusText
-          );
+          console.error("Error fetching user profile:", response.statusText);
         }
       } catch (error) {
-        console.error("Error fetching user profile and tasks:", error);
+        console.error("Error fetching user profile:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserProfileAndTasks();
+    fetchUserProfile();
   }, [profileUid]);
+
+  useEffect(() => {
+    const fetchUserTasks = async () => {
+      if (profile.id) {
+        // Solo hacer la petición si el ID ya está disponible
+        try {
+          const responseTask = await fetch(
+            `https://taskban-task.netlify.app/.netlify/functions/server/tasks/user?userId=${profile.id}`
+          );
+          if (responseTask.ok) {
+            const data = await responseTask.json();
+            setTasks(data || []);
+          } else {
+            console.error(
+              "Error fetching user tasks:",
+              responseTask.statusText
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching user tasks:", error);
+        }
+      }
+    };
+
+    fetchUserTasks();
+  }, [profile.id]); // Este useEffect se ejecutará cuando profile.id cambie
 
   const handleEditProfile = () => {
     setIsEditing((prev) => !prev);
@@ -162,6 +190,7 @@ const Profile = ({ profileUid, isEditable }) => {
     const file = event.target.files[0];
     if (file) {
       setUploading(true);
+      setOpenPopup(true); // Abrir el popup al subir imagen
       try {
         const imageRef = ref(
           storage,
@@ -186,25 +215,20 @@ const Profile = ({ profileUid, isEditable }) => {
               ...prev,
               photoURL: downloadURL,
             }));
-
-            // Log cuando la imagen ya está almacenada
-            console.log("Imagen almacenada correctamente. URL:", downloadURL);
-
-            // Guardar la URL de la foto en la base de datos
             await setDoc(
               doc(db, "users", profileUid),
               { photoURL: downloadURL },
               { merge: true }
             );
-
             await handleSavePhotoProfile(downloadURL);
-
             setUploading(false);
+            setOpenPopup(false); // Cerrar el popup una vez subida la imagen
           }
         );
       } catch (error) {
         console.error("Error handling file upload:", error);
         setUploading(false);
+        setOpenPopup(false); // Cerrar el popup si ocurre un error
       }
     }
   };
@@ -356,8 +380,19 @@ const Profile = ({ profileUid, isEditable }) => {
               {tasks.length > 0 ? (
                 tasks.map((task, index) => (
                   <Box key={index} sx={{ mb: 1 }}>
-                    <Typography variant="h6">{task.title}</Typography>
-                    <Typography variant="body2">{task.description}</Typography>
+                    <Box
+                      sx={{
+                        bgcolor: "#f5f5f5", // Fondo gris
+                        borderRadius: "8px", // Bordes redondeados
+                        padding: 2, // Espaciado interno
+                        boxShadow: 1, // Sombra para dar un efecto de elevación
+                      }}
+                    >
+                      <Typography variant="h6">{task.name}</Typography>
+                      <Typography variant="body2">
+                        {task.description}
+                      </Typography>
+                    </Box>
                   </Box>
                 ))
               ) : (
@@ -369,6 +404,14 @@ const Profile = ({ profileUid, isEditable }) => {
           </Grid>
         </Grid>
       )}
+      <Dialog
+        open={openPopup}
+        onClose={() => setOpenPopup(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <Loader />
+      </Dialog>
     </Box>
   );
 };

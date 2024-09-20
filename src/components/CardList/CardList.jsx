@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/material";
 import Card from "../Card/Card";
-import getRandomEmoji from "../../utils/getRandomEmoji";
+import { getRandomEmoji } from "../../utils/getRandomEmoji";
 
 const CardList = ({ tasks, onDelete, onEdit }) => {
   return (
