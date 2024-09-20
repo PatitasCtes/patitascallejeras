@@ -1,0 +1,87 @@
+import React, { useState } from "react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { auth } from "../api/firebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom"; // Importar useNavigate
+
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate(); // Inicializar useNavigate
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+      localStorage.setItem("uid", user.uid); // Guardar UID en localStorage
+      window.location.href = "/"; // Redirigir al inicio
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleRegister = () => {
+    navigate("/register"); // Redirigir a la página de registro
+  };
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        textAlign: "center",
+        bgcolor: "#f5f5f5",
+        p: 3,
+      }}
+    >
+      <Typography variant="h2" gutterBottom sx={{ mb: 3 }}>
+        TaskBan®
+      </Typography>
+      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+        Bienvenido a la mejor compañía de la organización.
+      </Typography>
+      {error && <Typography color="error">{error}</Typography>}
+      <form onSubmit={handleLogin} style={{ width: "100%", maxWidth: 400 }}>
+        <TextField
+          label="Email"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextField
+          label="Contraseña"
+          type="password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button variant="contained" color="primary" type="submit" fullWidth>
+          Iniciar Sesión
+        </Button>
+      </form>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={handleRegister}
+        sx={{ mt: 2 }}
+      >
+        Registrarse
+      </Button>
+    </Box>
+  );
+};
+
+export default Login;

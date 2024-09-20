@@ -1,6 +1,5 @@
 import React from "react";
-import { Box, Typography, Card, CardContent } from "@mui/material";
-import Tracks from "../components/Tracks/Tracks";
+import { Box, Typography } from "@mui/material";
 
 const Home = () => {
   return (
