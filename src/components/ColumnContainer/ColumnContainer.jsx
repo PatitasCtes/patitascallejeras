@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import ColumnWithTasks from "../ColumnWithTasks/ColumnWithTasks";
 import TaskLoader from "../TaskLoader/TaskLoader";
 
-const ColumnContainer = ({ boardId }) => {
+const ColumnContainer = ({ boardId, refresh }) => {
   const [columns, setColumns] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,6 @@ const ColumnContainer = ({ boardId }) => {
   const fetchBoardData = () => {
     setLoading(true);
 
-    // Obtener columnas
     fetch(
       `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${boardId}`
     )
@@ -26,7 +25,6 @@ const ColumnContainer = ({ boardId }) => {
           Array.isArray(columnsData.columns) ? columnsData.columns : []
         );
 
-        // Obtener tareas
         return fetch(
           `https://taskban-task.netlify.app/.netlify/functions/server/tasks?boardId=${boardId}`
         );
@@ -52,7 +50,7 @@ const ColumnContainer = ({ boardId }) => {
 
   useEffect(() => {
     fetchBoardData();
-  }, [boardId]);
+  }, [boardId, refresh]); // Agregar `refresh` como dependencia para que se recarguen los datos
 
   if (loading) {
     return <TaskLoader />;
@@ -66,10 +64,12 @@ const ColumnContainer = ({ boardId }) => {
         alignItems: "flex-start",
         justifyContent: "flex-start",
         gap: 2,
+        overflowX: "auto",
+        backgroundColor: "#7A5C8C",
+        padding: 2,
       }}
     >
       {columns.map((column) => {
-        // Filtrar las tareas que corresponden a esta columna
         const tasksForColumn = tasks.filter(
           (task) => task.columnId == column.id.toString()
         );
@@ -79,8 +79,8 @@ const ColumnContainer = ({ boardId }) => {
             key={column.id}
             column={column}
             boardId={boardId}
-            tasks={tasksForColumn} // Pasar solo las tareas de esta columna
-            reloadTasks={fetchBoardData} // Pasar la función de recarga
+            tasks={tasksForColumn}
+            reloadTasks={fetchBoardData}
           />
         );
       })}

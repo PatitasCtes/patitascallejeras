@@ -62,7 +62,7 @@ const PopupCard = ({
   useEffect(() => {
     if (itemId && mode === "edit") {
       fetch(
-        `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${itemId}`
+        `https://taskban-task.netlify.app/.netlify/functions/server/tasks/${itemId}`
       )
         .then((response) => response.json())
         .then((data) => {
@@ -70,11 +70,15 @@ const PopupCard = ({
             name: data.name,
             description: data.description,
             points: data.points || 0,
-            startDate: data.startDate ? dayjs(data.startDate) : null,
-            endDate: data.endDate ? dayjs(data.endDate) : null,
+            startDate: data.estimatedStartDate
+              ? dayjs(data.estimatedStartDate)
+              : null,
+            endDate: data.estimatedFinishDate
+              ? dayjs(data.estimatedFinishDate)
+              : null,
             status: data.status || "Activa",
-            tutor: data.tutor || "",
-            involvedUsers: data.involvedUsers || [],
+            tutor: data.tutorUser || "",
+            involvedUsers: data.userInvolve || [],
           });
         })
         .catch((error) => {
