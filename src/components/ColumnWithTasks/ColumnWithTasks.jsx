@@ -90,6 +90,12 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
   };
 
   const handleDeleteColumn = async () => {
+    let board = JSON.parse(localStorage.getItem("boardData"));
+    let boardUpdated = JSON.stringify({
+      ...board,
+      columns: board.columns.filter((col) => col.id !== column.id),
+    });
+    localStorage.setItem("boardData", boardUpdated);
     const response = await fetch(
       `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${boardId}`,
       {
@@ -97,9 +103,7 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          columns: columns.filter((col) => col.id !== column.id), // Filtra la columna a eliminar
-        }),
+        body: boardUpdated,
       }
     );
 
@@ -117,6 +121,7 @@ const ColumnWithTasks = ({ boardId, column, tasks, reloadTasks }) => {
         width: "300px",
         padding: "8px",
         backgroundColor: "#f9f9f9",
+        flexShrink: 0,
       }}
     >
       <Box

@@ -1,26 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  TextField,
+  DialogActions,
+} from "@mui/material";
 import { useParams } from "react-router-dom"; // Importar useParams
 import HeroScreen from "../components/HeroScreen/HeroScreen";
 import Loader from "../components/Loader/Loader";
-import ListContainer from "../components/ColumnContainer/ColumnContainer";
+import ColumnContainer from "../components/ColumnContainer/ColumnContainer";
 import imgSrc from "../assets/cartelera3.jpeg";
-
 const Board = () => {
-  const { id } = useParams(); // Obtener el id de la URL
-  const [board, setBoard] = useState(null); // Estado para almacenar la info del tablero
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
-  const [isError, setIsError] = useState(false); // Estado de error
+  const { id } = useParams();
+  const [board, setBoard] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [newColumnName, setNewColumnName] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Función para obtener los detalles del tablero
+  const [refreshColumns, setRefreshColumns] = useState(false); // Nuevo estado para refrescar columnas
+
   const fetchBoardDetails = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
         `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${id}`
       );
+      if (!response.ok) {
+        throw new Error("Error fetching board details");
+      }
       const data = await response.json();
-      setBoard(data); // Guardar los detalles del tablero
+      setBoard(data);
+      localStorage.setItem("boardData", JSON.stringify(data));
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching board details:", error);
@@ -29,15 +43,63 @@ const Board = () => {
     }
   };
 
-  // Llamar a fetchBoardDetails al montar el componente
   useEffect(() => {
     if (id) {
-      fetchBoardDetails();
+      const storedBoard = localStorage.getItem("boardData");
+      if (storedBoard) {
+        setBoard(JSON.parse(storedBoard));
+        setIsLoading(false);
+      } else {
+        fetchBoardDetails();
+      }
     }
-  }, [id]);
+  }, []);
 
   const handleAdd = () => {
-    console.log("Agregar Nueva Lista");
+    setDialogOpen(true);
+  };
+
+  const handleCreateColumn = async () => {
+    if (!newColumnName) return;
+
+    let boardAct = JSON.parse(localStorage.getItem("boardData"));
+    const newColumn = {
+      id: boardAct.columns.length + newColumnName,
+      name: newColumnName,
+      tasks: [],
+    };
+
+    const updatedBoard = {
+      ...board,
+      columns: [...board.columns, newColumn],
+    };
+
+    try {
+      const response = await fetch(
+        `https://taskban-boards.netlify.app/.netlify/functions/server/boards/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedBoard),
+        }
+      );
+
+      if (response.ok) {
+        setBoard(updatedBoard);
+        localStorage.setItem("boardData", JSON.stringify(updatedBoard));
+        setDialogOpen(false);
+        setNewColumnName("");
+
+        // Forzar recarga de columnas
+        setRefreshColumns((prev) => !prev);
+      } else {
+        console.error("Error al agregar la columna:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error al agregar la columna:", error);
+    }
   };
 
   return (
@@ -63,9 +125,30 @@ const Board = () => {
         Agregar Columna
       </Button>
 
-      <ListContainer boardId={id} />
+      {/* Pasar el estado para refrescar las columnas */}
+      <ColumnContainer boardId={id} refresh={refreshColumns} />
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle>Agregar Nueva Columna</DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Nombre de la columna"
+            fullWidth
+            value={newColumnName}
+            onChange={(e) => setNewColumnName(e.target.value)}
+            autoFocus
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleCreateColumn} color="primary">
+            Crear
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
-
 export default Board;

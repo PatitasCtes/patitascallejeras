@@ -28,6 +28,7 @@ import {
   getDownloadURL,
 } from "../api/firebaseConfig";
 import Loader from "../components/Loader/Loader";
+import UserAvatar from "../components/UserAvatar/UserAvatar";
 
 const Profile = ({ profileUid, isEditable }) => {
   if (profileUid === undefined) profileUid = localStorage.getItem("uid");
@@ -272,7 +273,18 @@ const Profile = ({ profileUid, isEditable }) => {
                   />
                 </IconButton>
               )}
-
+              {profile.photoURL && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "10%",
+                    right: "10%",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <UserAvatar src={profile.photoURL} />
+                </Box>
+              )}
               {uploading && (
                 <CircularProgress
                   size={24}
