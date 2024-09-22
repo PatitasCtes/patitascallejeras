@@ -36,7 +36,7 @@ const Home = () => {
         }}
       >
         <iframe
-          src="https://www.youtube.com/embed/iBFxMTEEM2g?autoplay=1&mute=1&loop=1&playlist=iBFxMTEEM2g"
+          src="https://www.youtube.com/embed/iBFxMTEEM2g?autoplay=1&modestbranding=1&controls=0&fs=0&showinfo=0&rel=0&mute=1&loop=1&playlist=iBFxMTEEM2g"
           title="Background Video"
           style={{
             position: "absolute",
