@@ -142,7 +142,7 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <TextField
-          label="Descripción"
+          label="Acerca de vos"
           variant="outlined"
           fullWidth
           margin="normal"
