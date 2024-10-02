@@ -193,9 +193,9 @@ const PopupCard = ({
               </IconButton>
               <TextField
                 label="Puntos"
+                placeholder="Ponderación de urgencia"
                 name="points"
                 type="number"
-                value={itemDetails.points}
                 onChange={handleInputChange}
                 fullWidth
                 margin="normal"
