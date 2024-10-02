@@ -134,6 +134,7 @@ const Register = () => {
         />
         <TextField
           label="Contraseña"
+          placeholder="Mínimo 6 caracteres"
           type="password"
           variant="outlined"
           fullWidth
