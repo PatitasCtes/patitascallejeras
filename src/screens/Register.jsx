@@ -131,6 +131,7 @@ const Register = () => {
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
         <TextField
           label="Email"
@@ -139,6 +140,7 @@ const Register = () => {
           margin="normal"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <TextField
           label="Contraseña"
@@ -149,6 +151,7 @@ const Register = () => {
           margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <TextField
           label="Acerca de vos"
