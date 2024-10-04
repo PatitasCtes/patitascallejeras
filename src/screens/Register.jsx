@@ -9,7 +9,7 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [apellido, setApellido] = useState("");
+  const [description, setDescription] = useState("");
   const [teamId, setTeamId] = useState(""); // Nuevo estado para teamId
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Estado para manejar el popup
@@ -68,7 +68,7 @@ const Register = () => {
         rol: "developer",
         teamId: finalTeamId,
         name: name,
-        apellido: apellido,
+        description: description,
       };
 
       const response = await fetch(
@@ -125,14 +125,6 @@ const Register = () => {
           onChange={(e) => setName(e.target.value)}
         />
         <TextField
-          label="Apellido"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={apellido}
-          onChange={(e) => setApellido(e.target.value)}
-        />
-        <TextField
           label="Email"
           variant="outlined"
           fullWidth
@@ -149,6 +141,14 @@ const Register = () => {
           margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+        <TextField
+          label="Acerca de vos"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <TextField
           label="Team ID (opcional)"
