@@ -93,7 +93,7 @@ const Login = () => {
         </Button>
       </form>
       <Button
-        variant="outlined"
+        variant="contained"
         color="primary"
         onClick={handleRegister}
         sx={{ mt: 2 }}
