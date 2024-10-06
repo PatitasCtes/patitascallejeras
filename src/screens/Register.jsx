@@ -17,6 +17,13 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+
+    //Validación del campo nombre
+    if(name.length<3){
+      setError("El nombre debe contener al menos 3 letras");
+      return;
+    }
+
     setLoading(true); // Mostrar popup
 
     try {
@@ -118,11 +125,13 @@ const Register = () => {
       <form onSubmit={handleRegister} style={{ width: "100%", maxWidth: 400 }}>
         <TextField
           label="Nombre"
+          placeholder="Nombre completo"
           variant="outlined"
           fullWidth
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
         <TextField
           label="Email"
@@ -131,18 +140,21 @@ const Register = () => {
           margin="normal"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <TextField
           label="Contraseña"
+          placeholder="Mínimo 6 caracteres"
           type="password"
           variant="outlined"
           fullWidth
           margin="normal"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <TextField
-          label="Descripción"
+          label="Acerca de vos"
           variant="outlined"
           fullWidth
           margin="normal"
