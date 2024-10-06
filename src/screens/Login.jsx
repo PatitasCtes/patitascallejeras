@@ -4,6 +4,7 @@ import { auth } from "../api/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -79,6 +80,7 @@ const Login = () => {
         />
         <TextField
           label="Contraseña"
+          placeholder="Mínimo 6 caracteres"
           type="password"
           variant="outlined"
           fullWidth
@@ -91,7 +93,7 @@ const Login = () => {
         </Button>
       </form>
       <Button
-        variant="outlined"
+        variant="contained"
         color="primary"
         onClick={handleRegister}
         sx={{ mt: 2 }}
