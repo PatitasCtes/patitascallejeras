@@ -60,7 +60,7 @@ function App() {
           <Route
             path="/login"
             element={
-              <Layout showHeaderFooter={true}>
+              <Layout showHeaderFooter={false}>
                 <Login />
               </Layout>
             }
@@ -68,7 +68,7 @@ function App() {
           <Route
             path="/register"
             element={
-              <Layout showHeaderFooter={true}>
+              <Layout showHeaderFooter={false}>
                 <Register />
               </Layout>
             }
