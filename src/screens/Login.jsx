@@ -4,7 +4,6 @@ import { auth } from "../api/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
-
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,10 +61,10 @@ const Login = () => {
         gutterBottom
         sx={{ mb: 3, color: "primary.main" }}
       >
-        TaskBan®
+        Patitas Callejeras 💜
       </Typography>
       <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-        Bienvenido a la mejor compañía de la organización.
+        Corrientes
       </Typography>
 
       {error && <Typography color="error">{error}</Typography>}

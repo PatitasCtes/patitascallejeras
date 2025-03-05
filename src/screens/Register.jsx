@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom"; // Importar useNavigate
 import { auth } from "../api/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import PopupLoader from "../components/PopupLoader/PopupLoader";
@@ -14,12 +15,14 @@ const Register = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Estado para manejar el popup
 
+  const navigate = useNavigate(); // Crear instancia de useNavigate
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
 
-    //Validación del campo nombre
-    if(name.length<3){
+    // Validación del campo nombre
+    if (name.length < 3) {
       setError("El nombre debe contener al menos 3 letras");
       return;
     }
@@ -96,7 +99,7 @@ const Register = () => {
       // Guardar UID y teamId en localStorage y redirigir
       localStorage.setItem("uid", user.uid);
       localStorage.setItem("teamId", finalTeamId);
-      window.location.href = "/login";
+      navigate("/login"); // Redirigir a login
     } catch (err) {
       setError(err.message);
     } finally {
@@ -173,6 +176,17 @@ const Register = () => {
           Registrar
         </Button>
       </form>
+
+      {/* Botón para usuarios con cuenta */}
+      <Button
+        variant="text"
+        color="secondary"
+        onClick={() => navigate("/login")}
+        sx={{ mt: 2 }}
+      >
+        Ya tengo una cuenta
+      </Button>
+
       <LoopOk />
       {/* Mostrar el PopupLoader si loading es true */}
       <PopupLoader open={loading} handleClose={() => setLoading(false)} />
