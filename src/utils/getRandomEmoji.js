@@ -1,7 +1,5 @@
 // getRandomEmoji.js
-const emojiList = [
-    "😀", "😂", "😍", "🤔", "😎", "🥳", "😇", "🤖", "👾", "🚀", "🌟", "🔥", "💧", "🍕", "🍔", "🧁", "🎉", "🎈", "🎯", "💡", "📱", "💻", "🎮"
-];
+const emojiList = ["🐶", "🐕", "🦮", "🐕‍🦺", "🐩", "🐈", "😺", "😸", "😹", "😻", "😼", "🐈‍⬛", "🐱", "😾", "😿", "🙀", "😽", "🦁", "🐺", "🦝", "🐹", "🐭", "🐗", "🐻", "🐻‍❄️", "🐅", "🐈", "🐆", "🐇", "🐿️", "🦦"];
 
 export const getRandomEmoji = () => {
     const randomIndex = Math.floor(Math.random() * emojiList.length);
@@ -12,55 +10,15 @@ export const getRandomEmoji = () => {
 
 const citas = [
     {
-        cita: "Nunca hubo una muerte más anunciada.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
+        cita: "Tu perro solo conocerá el mundo que tú le muestres.",
+        libro: "Patitas Callejeras",
+        autor: "Corrientes",
     },
     {
-        cita: "Todos los sueños con pájaros son de buena salud.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "Imagínate: tener tanta riqueza al alcance de la mano y tener que decir que no por una simple flaqueza del espíritu.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "El amor se aprende.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "Lo matamos a conciencia, pero somos inocentes.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "La gente que quería a Santiago Nasar presentía su muerte desde la madrugada.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "No entendía cómo podía seguir viviendo después de haber sabido que lo mataban.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "Nunca hubo una muerte más justificada.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "La fatalidad nos hace invisibles.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
-    {
-        cita: "Fue un acto de dignidad que nadie esperó.",
-        libro: "Crónicas de una muerte anunciada",
-        autor: "Gabriel García Márquez",
-    },
+        cita: "Algunos ángeles no tienen alas. Tienen 4 patas, un cuerpo peludo, nariz de pelotita, orejas de atención y un amor incondicional.",
+        libro: "Patitas Callejeras",
+        autor: "Corrientes",
+    }
 ];
 export const getCitasRandom = () => {
 

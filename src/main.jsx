@@ -13,19 +13,19 @@ const theme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#5106B7",
+      main: "#8E6FAB",
     },
     secondary: {
-      main: "#AA7DED",
+      main: "#26212E",
     },
     success: {
-      main: "#3f51b5",
+      main: "#FFFFFF",
     },
   },
 });
-// #FCC419
-// #AA7DED
-// #5106B7
+// #FFFFFF
+// #26212E
+// #8E6FAB
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
