@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationData from "./loader.json";
+import animationData from "./cat-loader.json";
 
 const Loader = () => {
   return (
