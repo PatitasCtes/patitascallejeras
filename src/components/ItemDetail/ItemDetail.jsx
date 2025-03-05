@@ -104,8 +104,8 @@ const ItemDetail = ({ item }) => {
             color="text.secondary"
             gutterBottom
           >
-            Sentimientos hacia personas: {feelingsWithPeople}, perros:{" "}
-            {feelingsWithDogs}, gatos: {feelingsWithCats}.
+            Relación con personas: {feelingsWithPeople}/10 perros:{" "}
+            {feelingsWithDogs}/10 gatos: {feelingsWithCats}/10.
           </Typography>
         </CardContent>
         <CardActions sx={{ justifyContent: "space-evenly" }}>
@@ -127,7 +127,7 @@ const ItemDetail = ({ item }) => {
             endIcon={<CottageIcon />}
             onClick={handleOpenPopup}
           >
-            VISITAR
+            DARLE HOGAR
           </Button>
         </CardActions>
       </Card>

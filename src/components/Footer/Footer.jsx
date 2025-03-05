@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { AppBar, IconButton, Toolbar, Typography, Box } from "@mui/material";
-import EmojiObjectsIcon from "@mui/icons-material/EmojiObjects";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import PetsIcon from "@mui/icons-material/Pets";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import { useTheme } from "@mui/material/styles";
+
 import Tracks from "../Tracks/Tracks";
-import Ok from "../Ok/Ok";
 
 const Footer = () => {
   const theme = useTheme();
@@ -19,7 +19,7 @@ const Footer = () => {
 
   return (
     <>
-      {showLottie && <Ok />}
+      {showLottie && <Tracks />}
       <AppBar
         position="static"
         sx={{
@@ -33,19 +33,19 @@ const Footer = () => {
         <Toolbar sx={{ justifyContent: "center" }}>
           <IconButton
             color="inherit"
-            href="https://github.com/Matijasevic-Emer/taskban"
+            href="https://www.instagram.com/patitascallejera/?hl=es"
             target="_blank"
             rel="noopener"
             size="large"
           >
-            <GitHubIcon />
+            <InstagramIcon />
           </IconButton>
 
           <Typography variant="h6" pl={3}>
-            Made with ❤️‍🔥 by Equipo5
+            Corrientes,Argentina
           </Typography>
           <IconButton color="inherit" size="large" onClick={handleClick}>
-            <EmojiObjectsIcon />
+            <PetsIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
