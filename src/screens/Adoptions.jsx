@@ -1,5 +1,5 @@
 import { getRandomEmoji } from "../utils/getRandomEmoji";
-import { Container, Button } from "@mui/material";
+import { Container, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom"; // Usamos useNavigate en lugar de useHistory
 import ItemDetailList from "../components/ItemDetailList/ItemDetailList";
 
@@ -12,16 +12,38 @@ const Adoptions = () => {
 
   return (
     <Container>
-      <h1>En adopción {getRandomEmoji()}</h1>
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleAddAdoption}
-        sx={{ marginBottom: 2 }}
+      <Box
+        sx={{
+          position: "sticky",
+          top: 0,
+          background: "white",
+          zIndex: 1,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 1,
+        }}
       >
-        Agregar nueva adopción
-      </Button>
+        <h1>En adopción {getRandomEmoji()}</h1>
+
+        <Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddAdoption}
+            sx={{ marginRight: 1 }}
+          >
+            Agregar nueva adopción
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleAddAdoption}
+          >
+            No me decido
+          </Button>
+        </Box>
+      </Box>
 
       <ItemDetailList />
     </Container>
