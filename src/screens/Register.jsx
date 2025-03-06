@@ -11,7 +11,6 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [teamId, setTeamId] = useState(""); // Nuevo estado para teamId
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Estado para manejar el popup
 
@@ -37,37 +36,32 @@ const Register = () => {
       );
       const user = userCredential.user;
 
-      let finalTeamId = teamId;
+      const newTeamName = `Team-${name}`;
+      const newTeamData = {
+        name: newTeamName,
+        description: `Equipo creado por ${name}`,
+        createdDate: new Date().toISOString(),
+        quantityMembers: 1,
+        isActive: true,
+      };
 
-      // Si el teamId está vacío, crear un nuevo equipo
-      if (!teamId) {
-        const newTeamName = `Team-${name}`;
-        const newTeamData = {
-          name: newTeamName,
-          description: `Equipo creado por ${name}`,
-          createdDate: new Date().toISOString(),
-          quantityMembers: 1,
-          isActive: true,
-        };
-
-        const teamResponse = await fetch(
-          "https://taskban-team.netlify.app/.netlify/functions/server/teams",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newTeamData),
-          }
-        );
-
-        if (!teamResponse.ok) {
-          throw new Error("No se pudo crear el equipo.");
+      const teamResponse = await fetch(
+        "https://taskban-team.netlify.app/.netlify/functions/server/teams",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newTeamData),
         }
+      );
 
-        const teamResult = await teamResponse.json();
-        finalTeamId = teamResult.teamId;
+      if (!teamResponse.ok) {
+        throw new Error("No se pudo crear el equipo.");
       }
+
+      const teamResult = await teamResponse.json();
+      const finalTeamId = teamResult.teamId;
 
       const userData = {
         UID: user.uid,
@@ -163,14 +157,6 @@ const Register = () => {
           margin="normal"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-        />
-        <TextField
-          label="Team ID (opcional)"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={teamId}
-          onChange={(e) => setTeamId(e.target.value)}
         />
         <Button variant="contained" color="primary" type="submit" fullWidth>
           Registrar
