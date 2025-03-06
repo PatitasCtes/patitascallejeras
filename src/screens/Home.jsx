@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, CardMedia } from "@mui/material";
+import { Box, Typography, CardMedia, useMediaQuery, Grid } from "@mui/material";
 import PaymentIcon from "@mui/icons-material/Payment";
 import Carousel from "react-material-ui-carousel";
 import h1 from "../assets/home-images/h1.jpg";
@@ -16,6 +16,7 @@ import h10 from "../assets/home-images/h10.jpg";
 const Home = () => {
   // Rutas de las imágenes
   const images = [h1, h2, h3, h4, h5, h6, h7, h8, h9, h10];
+  const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   return (
     <Box
@@ -63,37 +64,87 @@ const Home = () => {
           </a>
         </Typography>
       </Box>
-      <Box
-        sx={{
-          width: 150,
-          maxheight: 300,
-          height: 200,
-          position: "relative",
-          borderRadius: 2,
-          boxShadow: 3,
-          mt: 4,
-        }}
-      >
-        <Carousel
-          navButtonsAlwaysVisible={false}
-          indicators={false}
-          sx={{ height: "100%", width: "100%" }}
-        >
-          {images.map((src, index) => (
-            <CardMedia
-              key={index}
-              component="img"
-              height="100%"
-              width="100%"
-              objectFit="contain"
-              image={src}
-              alt={`Imagen ${index + 1}`}
-            />
-          ))}
-        </Carousel>
-      </Box>
+      <CarouselHome isSmallScreen={isSmallScreen} images={images} />
     </Box>
   );
 };
 
+const CarouselHome = ({ isSmallScreen, images }) => {
+  return (
+    <>
+      {isSmallScreen ? (
+        <Box
+          sx={{
+            width: 150,
+            maxheight: 300,
+            height: 200,
+            position: "relative",
+            borderRadius: 2,
+            boxShadow: 3,
+            mt: 4,
+          }}
+        >
+          <Carousel
+            navButtonsAlwaysVisible={false}
+            indicators={false}
+            sx={{ height: "100%", width: "100%" }}
+          >
+            {images.map((src, index) => (
+              <CardMedia
+                key={index}
+                component="img"
+                height="100%"
+                width="100%"
+                objectFit="contain"
+                image={src}
+                alt={`Imagen ${index + 1}`}
+              />
+            ))}
+          </Carousel>
+        </Box>
+      ) : (
+        <Grid container spacing={1} justifyContent="center" alignItems="center">
+          {[0, 1, 2].map((index) => (
+            <Grid item xs={12} md={2} key={index}>
+              <Box
+                sx={{
+                  width: 150,
+                  maxheight: 300,
+                  height: 200,
+                  position: "relative",
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  mt: 4,
+                }}
+              >
+                <Carousel
+                  navButtonsAlwaysVisible={false}
+                  indicators={false}
+                  sx={{ height: "100%", width: "100%" }}
+                >
+                  {Array.from({ length: 3 }).map((_, index) => {
+                    const randomIndex = Math.floor(
+                      Math.random() * images.length
+                    );
+                    return (
+                      <CardMedia
+                        key={index}
+                        component="img"
+                        height="100%"
+                        width="100%"
+                        objectFit="contain"
+                        image={images[randomIndex]}
+                        alt={`Imagen ${index + 1}`}
+                      />
+                    );
+                  })}
+                </Carousel>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </>
+  );
+};
 export default Home;
