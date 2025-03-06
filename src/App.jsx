@@ -19,19 +19,9 @@ function App() {
       <Route
         path="/"
         element={
-          <Layout>{isLoggedIn ? <Home /> : <Navigate to="/login" />}</Layout>
-        }
-      />
-      <Route
-        path="/boards"
-        element={
-          <Layout>{isLoggedIn ? <Boards /> : <Navigate to="/login" />}</Layout>
-        }
-      />
-      <Route
-        path="/team"
-        element={
-          <Layout>{isLoggedIn ? <Team /> : <Navigate to="/login" />}</Layout>
+          <Layout>
+            <Home />
+          </Layout>
         }
       />
       <Route
@@ -47,21 +37,16 @@ function App() {
         }
       />
       <Route
-        path="/board/:id"
+        path="/add-pet"
         element={
           <Layout>{isLoggedIn ? <Board /> : <Navigate to="/login" />}</Layout>
         }
       />
-      <Route
-        path="/map"
-        element={
-          <Layout>{isLoggedIn ? <Map /> : <Navigate to="/login" />}</Layout>
-        }
-      />
+
       <Route
         path="/login"
         element={
-          <Layout showHeaderFooter={false}>
+          <Layout>
             <Login />
           </Layout>
         }
@@ -69,7 +54,7 @@ function App() {
       <Route
         path="/register"
         element={
-          <Layout showHeaderFooter={false}>
+          <Layout>
             <Register />
           </Layout>
         }

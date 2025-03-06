@@ -17,6 +17,7 @@ import HomeIcon from "@mui/icons-material/Home";
 
 const Navigationbar = () => {
   const [open, setOpen] = useState(false);
+  const isLoggedIn = localStorage.getItem("uid");
   const navLinks = [
     {
       title: "Inicio",
@@ -29,13 +30,8 @@ const Navigationbar = () => {
       icon: <DashboardIcon />,
     },
     {
-      title: "Equipo",
-      path: "/team",
-      icon: <GroupIcon />,
-    },
-    {
-      title: "Perfil",
-      path: "/profile",
+      title: isLoggedIn ? "Perfil" : "Ingresar",
+      path: isLoggedIn ? "/profile" : "/login",
       icon: <AccountCircleIcon />,
     },
   ];
