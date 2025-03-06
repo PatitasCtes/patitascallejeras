@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CardMedia } from "@mui/material";
 import PaymentIcon from "@mui/icons-material/Payment";
 import Carousel from "react-material-ui-carousel";
 import h1 from "../assets/home-images/h1.jpg";
@@ -35,14 +35,7 @@ const Home = () => {
         gutterBottom
         sx={{ mb: 3, color: "primary.main" }}
       >
-        💜
-      </Typography>
-      <Typography
-        variant="h2"
-        gutterBottom
-        sx={{ mb: 3, color: "primary.main" }}
-      >
-        Rescate de animales
+        Rescate de animales 💜
       </Typography>
       <Typography
         variant="h6"
@@ -72,9 +65,9 @@ const Home = () => {
       </Box>
       <Box
         sx={{
-          width: "100%",
-          maxWidth: 1000,
-          height: 500,
+          width: 150,
+          maxheight: 300,
+          height: 200,
           position: "relative",
           borderRadius: 2,
           boxShadow: 3,
@@ -82,21 +75,20 @@ const Home = () => {
         }}
       >
         <Carousel
-          navButtonsAlwaysVisible
+          navButtonsAlwaysVisible={false}
           indicators={false}
-          sx={{ height: "100%" }}
+          sx={{ height: "100%", width: "100%" }}
         >
           {images.map((src, index) => (
-            <Box
+            <CardMedia
               key={index}
-              sx={{
-                height: "100%",
-                backgroundImage: `url(${src})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                borderRadius: 2,
-              }}
-            ></Box>
+              component="img"
+              height="100%"
+              width="100%"
+              objectFit="contain"
+              image={src}
+              alt={`Imagen ${index + 1}`}
+            />
           ))}
         </Carousel>
       </Box>
