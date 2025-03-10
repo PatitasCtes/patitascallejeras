@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+
 import {
   Card,
   CardActions,
@@ -15,9 +16,12 @@ import EditIcon from "@mui/icons-material/Edit"; // Icono de lápiz
 import DeleteIcon from "@mui/icons-material/Delete"; // Icono de basurero
 import ItemPopup from "../ItemPopup/ItemPopup";
 import { deletePetById } from "../../api/api";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../context/AppContext";
 
 const ItemDetail = ({ item }) => {
   const {
+    id,
     petUID,
     name,
     description,
@@ -59,15 +63,18 @@ const ItemDetail = ({ item }) => {
     localStorage.setItem("savedItemIds", JSON.stringify(updatedSavedItemIds));
     setSavedItemIds(updatedSavedItemIds);
   };
-
+  const navigate = useNavigate();
+  const { savePetId } = useContext(AppContext);
   const handleEdit = () => {
-    console.log("Editar:", petUID);
+    savePetId(item.id);
+    navigate(`/edit-pet`);
   };
 
   const handleDelete = async () => {
     try {
-      await deletePetById(petUID);
-      console.log("Eliminado correctamente:", petUID);
+      await deletePetById(id);
+      console.log("Eliminado correctamente:", id);
+      window.location.reload();
       // Aquí puedes agregar lógica adicional como recargar la lista de mascotas
     } catch (error) {
       console.error("Error eliminando mascota:", error);
@@ -130,9 +137,7 @@ const ItemDetail = ({ item }) => {
               )
             }
             onClick={handleSave}
-          >
-            {savedItemIds.includes(petUID) ? "GUARDADO" : "GUARDAR"}
-          </Button>
+          ></Button>
           <Button
             variant="contained"
             endIcon={<CottageIcon />}

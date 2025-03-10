@@ -56,52 +56,34 @@ const ItemPopup = ({ open, onClose, item }) => {
               ))}
             </Carousel>
             <Typography variant="body1" mt={2}>
-              <strong>Descripción:</strong> {item.description}
+              <strong>{item.description}</strong>
             </Typography>
             <Typography variant="body1" mt={1}>
               <strong>Edad:</strong> {item.age} años
             </Typography>
             <Typography variant="body1" mt={1}>
-              <strong>Raza:</strong> {item.breed}
+              <strong>Raza/Parecido:</strong> {item.breed}
             </Typography>
             <Typography variant="body1" mt={1}>
               <strong>Estado:</strong> {item.status}
             </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Vacunado:</strong> {item.vaccinated ? "Sí" : "No"}
+            <Typography
+              variant="body1"
+              mt={1}
+              sx={{ color: item.vaccinated ? "green" : "red" }}
+            >
+              <strong>Vacunado:</strong>{" "}
+              {item.vaccinated ? "Vacunado" : "Sin vacunas"}
             </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Castrado:</strong> {item.castred ? "Sí" : "No"}
+            <Typography
+              variant="body1"
+              mt={1}
+              sx={{ color: item.castred ? "green" : "red" }}
+            >
+              <strong>Vacunado:</strong>{" "}
+              {item.castred ? "Castrado" : "Sin castrar"}
             </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Rescate:</strong> {item.rescueDate}
-            </Typography>
-
-            {/* Más datos */}
-            <Typography variant="body1" mt={2}>
-              <strong>Sentimientos con personas:</strong>{" "}
-              {item.feelingsWithPeople || "No disponible"}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Sentimientos con perros:</strong>{" "}
-              {item.feelingsWithDogs || "No disponible"}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Sentimientos con gatos:</strong>{" "}
-              {item.feelingsWithCats || "No disponible"}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Sentimientos con personas (observaciones):</strong>{" "}
-              {item.feelingsWithPeopleObs || "No disponible"}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Sentimientos con perros (observaciones):</strong>{" "}
-              {item.feelingsWithDogsObs || "No disponible"}
-            </Typography>
-            <Typography variant="body1" mt={1}>
-              <strong>Sentimientos con gatos (observaciones):</strong>{" "}
-              {item.feelingsWithCatsObs || "No disponible"}
-            </Typography>
+            <FeelingsSection item={item} />
             <Typography variant="body1" mt={1}>
               <strong>Observaciones:</strong> {item.obs || "No disponible"}
             </Typography>
@@ -142,3 +124,50 @@ const ItemPopup = ({ open, onClose, item }) => {
 };
 
 export default ItemPopup;
+
+const FeelingsSection = ({ item }) => {
+  const getFeelingEmoji = (score) => {
+    if (score >= 9) return "🥰";
+    if (score >= 7) return "☺️";
+    if (score >= 5) return "😐";
+    if (score >= 3) return "🤨";
+    return "😣";
+  };
+  return (
+    <Box>
+      {/* Sentimientos con personas */}
+
+      <Typography variant="body2" mt={1}>
+        <strong>Con Personas:</strong>{" "}
+        {item.feelingsWithPeople !== undefined ? (
+          <>{getFeelingEmoji(item.feelingsWithPeople)}</>
+        ) : (
+          "No disponible"
+        )}
+        {item.feelingsWithPeopleObs || "No disponible"}
+      </Typography>
+
+      {/* Sentimientos con perros */}
+      <Typography variant="body2" mt={1}>
+        <strong>Con Perros:</strong>{" "}
+        {item.feelingsWithDogs !== undefined ? (
+          <>{getFeelingEmoji(item.feelingsWithDogs)}</>
+        ) : (
+          "No disponible"
+        )}
+        {item.feelingsWithDogsObs || "No disponible"}
+      </Typography>
+
+      {/* Sentimientos con gatos */}
+      <Typography variant="body2" mt={1}>
+        <strong>Con Gatos:</strong>{" "}
+        {item.feelingsWithCats !== undefined ? (
+          <>{getFeelingEmoji(item.feelingsWithCats)}</>
+        ) : (
+          "No disponible"
+        )}
+        {item.feelingsWithCatsObs || "No disponible"}
+      </Typography>
+    </Box>
+  );
+};
