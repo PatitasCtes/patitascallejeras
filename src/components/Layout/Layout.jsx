@@ -6,7 +6,17 @@ const Layout = ({ children, showHeaderFooter = true }) => {
   return (
     <>
       {showHeaderFooter && <Navigationbar />}
-      <Container sx={{ padding: 5 }}>{children}</Container>
+      <Container
+        sx={{
+          padding: {
+            xs: 2, // Menor padding para pantallas pequeñas (móviles)
+            sm: 3, // Padding intermedio para tablets
+            md: 5, // Padding completo para pantallas grandes (escritorio)
+          },
+        }}
+      >
+        {children}
+      </Container>
       {showHeaderFooter && <Footer />}
     </>
   );

@@ -11,6 +11,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { fetchPetById, updatePetById } from "../api/api";
@@ -20,14 +22,13 @@ const EditPet = () => {
   const navigate = useNavigate();
   const { petId } = useContext(AppContext);
 
-  const [petData, setPetData] = useState(null); // Inicialmente vacío
+  const [petData, setPetData] = useState(null);
 
   useEffect(() => {
-    // Cargar los datos de la mascota cuando el componente se monta
     const fetchPetData = async () => {
       try {
-        const pet = await fetchPetById(petId); // Obtener datos desde la API
-        setPetData(pet); // Establecer los datos iniciales
+        const pet = await fetchPetById(petId);
+        setPetData(pet);
       } catch (error) {
         console.error("Error al cargar los datos de la mascota:", error);
       }
@@ -60,8 +61,8 @@ const EditPet = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updatePetById(petId, petData); // Actualizar los datos en la API
-      navigate(`/pets/${petId}`); // Navegar a la página de detalles de la mascota
+      await updatePetById(petId, petData);
+      navigate(`/adoptions`);
     } catch (error) {
       console.error("Error al actualizar la mascota:", error);
     }
@@ -150,8 +151,6 @@ const EditPet = () => {
             </FormControl>
           </Grid>
 
-          {/* Incluye los sliders, observaciones y otros campos, siguiendo el patrón anterior */}
-          {/* Slider: Relación con gatos */}
           <Grid item xs={12}>
             <Typography gutterBottom>Relación con gatos</Typography>
             <Slider
@@ -174,7 +173,59 @@ const EditPet = () => {
             />
           </Grid>
 
-          {/* Resto de sliders, checkboxes y campos */}
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={petData.castred || false}
+                  onChange={handleCheckboxChange("castred")}
+                />
+              }
+              label="Castrado"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre castración"
+              name="castredObs"
+              value={petData.castredObs || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={petData.vaccinated || false}
+                  onChange={handleCheckboxChange("vaccinated")}
+                />
+              }
+              label="Vacunado"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre vacunación"
+              name="vaccinatedObs"
+              value={petData.vaccinatedObs || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones generales"
+              name="obs"
+              value={petData.obs || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
 
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
