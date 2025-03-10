@@ -40,6 +40,10 @@ const Adoption = () => {
     if (currentQuestionIndex < formAdoption.preguntas.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setAnswerNumber((prev) => prev + 1);
+    } else {
+      setCurrentQuestionIndex(1);
+      setAnswerNumber(1);
+      navigate("/adoptions");
     }
   };
 
@@ -65,7 +69,14 @@ const Adoption = () => {
         p: 3,
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h2"
+        gutterBottom
+        sx={{
+          fontSize: { xs: "1.2rem", sm: "2rem" }, // Ajusta el tamaño en móvil
+          textAlign: { xs: "center", sm: "left" }, // Centra el texto en móvil
+        }}
+      >
         Por favor completa el siguiente formulario para adoptar a {petName} 🐾
       </Typography>
       {answerNumber + 1 == formAdoption.preguntas.length ? (
@@ -74,10 +85,9 @@ const Adoption = () => {
           alt={petName}
           onClick={handleCancel}
           style={{
-            width: "200px",
-            height: "200px",
+            width: "90px",
+            height: "90px",
             borderRadius: "50%",
-            marginBottom: "16px",
           }}
         />
       ) : (
@@ -85,10 +95,9 @@ const Adoption = () => {
           src={petPhotoUrl}
           alt={petName}
           style={{
-            width: "200px",
-            height: "200px",
+            width: "90px",
+            height: "90px",
             borderRadius: "50%",
-            marginBottom: "16px",
           }}
         />
       )}

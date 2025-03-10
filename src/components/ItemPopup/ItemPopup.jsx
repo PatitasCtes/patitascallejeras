@@ -72,16 +72,16 @@ const ItemPopup = ({ open, onClose, item }) => {
               mt={1}
               sx={{ color: item.vaccinated ? "green" : "red" }}
             >
-              <strong>Vacunado:</strong>{" "}
-              {item.vaccinated ? "Vacunado" : "Sin vacunas"}
+              <strong>{item.vaccinated ? "Vacunado" : "Sin vacunas"}</strong>{" "}
+              {item.vaccinatedObs}
             </Typography>
             <Typography
               variant="body1"
               mt={1}
               sx={{ color: item.castred ? "green" : "red" }}
             >
-              <strong>Vacunado:</strong>{" "}
-              {item.castred ? "Castrado" : "Sin castrar"}
+              <strong>{item.castred ? "Castrado" : "Sin castrar"}</strong>{" "}
+              {item.castredObs}
             </Typography>
             <FeelingsSection item={item} />
             <Typography variant="body1" mt={1}>
@@ -106,14 +106,15 @@ const ItemPopup = ({ open, onClose, item }) => {
                 <strong>ID del libro:</strong> {item.bookID}
               </Typography>
             )}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSavePetId}
-              sx={{ mt: 2 }}
-            >
-              Adoptar
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSavePetId}
+              >
+                Adoptar
+              </Button>
+            </Box>
           </Box>
         ) : (
           <Typography variant="body1">Sin información del ítem.</Typography>

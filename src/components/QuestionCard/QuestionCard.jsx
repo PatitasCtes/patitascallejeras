@@ -49,6 +49,8 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
         bgcolor: "#fff",
         borderRadius: 2,
         boxShadow: 2,
+        maxHeight: 450, // Altura máxima para el scroll
+        overflowY: "auto", // Scroll vertical si excede la altura
       }}
     >
       <Typography variant="h6" gutterBottom>
@@ -75,34 +77,52 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
       )}
 
       {question.tipo === "opcion_unica" && (
-        <RadioGroup value={answer} onChange={handleRadioChange}>
-          {question.opciones.map((opcion, index) => (
-            <FormControlLabel
-              key={index}
-              value={opcion}
-              control={<Radio />}
-              label={opcion}
-            />
-          ))}
-        </RadioGroup>
+        <Box
+          sx={{
+            padding: 1,
+            border: "1px solid #e0e0e0",
+            borderRadius: 1,
+          }}
+        >
+          <RadioGroup value={answer} onChange={handleRadioChange}>
+            {question.opciones.map((opcion, index) => (
+              <FormControlLabel
+                key={index}
+                value={opcion}
+                control={<Radio />}
+                label={opcion}
+              />
+            ))}
+          </RadioGroup>
+        </Box>
       )}
 
       {question.tipo === "opcion_multiple" && (
-        <FormGroup>
-          {question.opciones.map((opcion, index) => (
-            <FormControlLabel
-              key={index}
-              control={
-                <Checkbox
-                  value={opcion}
-                  checked={answer.includes(opcion)}
-                  onChange={handleCheckboxChange}
-                />
-              }
-              label={opcion}
-            />
-          ))}
-        </FormGroup>
+        <Box
+        // sx={{
+        //   maxHeight: 200, // Altura máxima para el scroll
+        //   overflowY: "auto", // Scroll vertical si excede la altura
+        //   padding: 1,
+        //   border: "1px solid #e0e0e0",
+        //   borderRadius: 1,
+        // }}
+        >
+          <FormGroup>
+            {question.opciones.map((opcion, index) => (
+              <FormControlLabel
+                key={index}
+                control={
+                  <Checkbox
+                    value={opcion}
+                    checked={answer.includes(opcion)}
+                    onChange={handleCheckboxChange}
+                  />
+                }
+                label={opcion}
+              />
+            ))}
+          </FormGroup>
+        </Box>
       )}
 
       <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
