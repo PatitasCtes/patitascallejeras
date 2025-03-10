@@ -7,6 +7,7 @@ import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Adoptions from "./screens/Adoptions";
 import AddPet from "./screens/AddPet";
+import EditPet from "./screens/EditPet";
 
 function App() {
   const isLoggedIn = localStorage.getItem("uid");
@@ -39,6 +40,18 @@ function App() {
           isLoggedIn ? (
             <Layout>
               <AddPet />
+            </Layout>
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/edit-pet"
+        element={
+          isLoggedIn ? (
+            <Layout>
+              <EditPet />
             </Layout>
           ) : (
             <Navigate to="/login" />

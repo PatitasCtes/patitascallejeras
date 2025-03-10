@@ -10,6 +10,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { addPet } from "./../api/api";
@@ -69,6 +71,13 @@ const AddPet = () => {
     }));
   };
 
+  const handleCheckboxChange = (name) => (e) => {
+    setPetData((prevData) => ({
+      ...prevData,
+      [name]: e.target.checked,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -78,6 +87,10 @@ const AddPet = () => {
     } catch (error) {
       console.error("Error al agregar el pet:", error);
     }
+  };
+
+  const handleCancel = () => {
+    navigate("/adoptions");
   };
 
   return (
@@ -173,6 +186,16 @@ const AddPet = () => {
           </Grid>
 
           <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la relación con gatos"
+              name="feelingsWithCatsObs"
+              value={petData.feelingsWithCatsObs}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
             <Typography gutterBottom>Relación con perros</Typography>
             <Slider
               value={petData.feelingsWithDogs}
@@ -181,6 +204,16 @@ const AddPet = () => {
               max={10}
               marks
               valueLabelDisplay="auto"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la relación con perros"
+              name="feelingsWithDogsObs"
+              value={petData.feelingsWithDogsObs}
+              onChange={handleInputChange}
             />
           </Grid>
 
@@ -197,8 +230,78 @@ const AddPet = () => {
           </Grid>
 
           <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la relación con personas"
+              name="feelingsWithPeopleObs"
+              value={petData.feelingsWithPeopleObs}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={petData.castred}
+                  onChange={handleCheckboxChange("castred")}
+                />
+              }
+              label="Esterilizado"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la esterilización"
+              name="castredObs"
+              value={petData.castredObs}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={petData.vaccinated}
+                  onChange={handleCheckboxChange("vaccinated")}
+                />
+              }
+              label="Vacunado"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la vacunación"
+              name="vaccinatedObs"
+              value={petData.vaccinatedObs}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones generales"
+              name="obs"
+              value={petData.obs}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
               Agregar mascota
+            </Button>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button variant="outlined" color="error" onClick={handleCancel}>
+              Cancelar
             </Button>
           </Grid>
         </Grid>
