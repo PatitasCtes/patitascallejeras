@@ -2,12 +2,14 @@
 import React, { createContext, useState } from "react";
 
 // Crear el contexto
-const AppContext = createContext();
+export const AppContext = createContext();
 
 // Crear el proveedor del contexto
-const AppProvider = ({ children }) => {
+export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Estado de ejemplo
   const [petId, setPetId] = useState(null);
+  const [petName, setpetName] = useState(null);
+  const [petPhotoUrl, setpetPhotoUrl] = useState(null);
 
   const login = (userData) => {
     setUser(userData);
@@ -21,11 +23,31 @@ const AppProvider = ({ children }) => {
     setPetId(id);
   };
 
+  const savePetName = (name) => {
+    setpetName(name);
+  };
+
+  const savePetPhotoUrl = (url) => {
+    setpetPhotoUrl(url);
+  };
+
   return (
-    <AppContext.Provider value={{ user, login, logout, petId, savePetId }}>
+    <AppContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        petId,
+        petName,
+        petPhotoUrl,
+        savePetId,
+        savePetName,
+        savePetPhotoUrl,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
 };
 
-export { AppContext, AppProvider };
+// export { AppContext, AppProvider };
