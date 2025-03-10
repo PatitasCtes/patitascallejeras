@@ -131,3 +131,54 @@ export const addBook = async (petId, bookData) => {
         throw error;
     }
 };
+
+
+const API_FORM_BASE_URL = "https://patitas-forms.netlify.app/.netlify/functions/server";
+
+// Obtener formulario por tipo
+export const fetchForm = async (formType) => {
+    try {
+        const response = await fetch(`${API_FORM_BASE_URL}/form/${formType}`);
+        if (!response.ok) {
+            throw new Error("Error fetching form");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching form:", error);
+        throw error;
+    }
+};
+
+// Obtener formulario por ID
+export const fetchFormById = async (formId) => {
+    try {
+        const response = await fetch(`${API_FORM_BASE_URL}/form/id/${formId}`);
+        if (!response.ok) {
+            throw new Error("Error fetching form by ID");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error fetching form by ID:", error);
+        throw error;
+    }
+};
+
+// Guardar formulario con respuestas
+export const saveForm = async (formData) => {
+    try {
+        const response = await fetch(`${API_FORM_BASE_URL}/form`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+        if (!response.ok) {
+            throw new Error("Error saving form");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error saving form:", error);
+        throw error;
+    }
+};
