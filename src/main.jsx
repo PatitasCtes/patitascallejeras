@@ -8,6 +8,7 @@ import "@fontsource/roboto/700.css";
 import { CssBaseline } from "@mui/material";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { AppProvider } from "./context/AppContext.jsx"; // Importar el Provider
 
 const theme = createTheme({
   palette: {
@@ -31,7 +32,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <CssBaseline />
-        <App />
+        <AppProvider>
+          <App />
+        </AppProvider>
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>

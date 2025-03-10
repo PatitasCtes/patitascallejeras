@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Dialog,
   DialogContent,
   IconButton,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Carousel from "react-material-ui-carousel";
 
+import { AppContext } from "../../context/AppContext";
+
 const ItemPopup = ({ open, onClose, item }) => {
+  const { setPetId } = useContext(AppContext);
+
   const handleClose = () => {
     onClose();
+  };
+
+  const handleSavePetId = () => {
+    setPetId(item.id);
   };
 
   return (
@@ -111,6 +120,14 @@ const ItemPopup = ({ open, onClose, item }) => {
                 <strong>ID del libro:</strong> {item.bookID}
               </Typography>
             )}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSavePetId}
+              sx={{ mt: 2 }}
+            >
+              Boton1
+            </Button>
           </Box>
         ) : (
           <Typography variant="body1">Sin información del ítem.</Typography>

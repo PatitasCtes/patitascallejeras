@@ -1,11 +1,7 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 import Home from "./screens/Home";
-import Boards from "./screens/Boards";
-import Team from "./screens/Team";
 import Profile from "./screens/Profile";
-import Map from "./screens/Map";
-import Board from "./screens/Board";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Adoptions from "./screens/Adoptions";
@@ -39,7 +35,7 @@ function App() {
       <Route
         path="/add-pet"
         element={
-          <Layout>{isLoggedIn ? <Board /> : <Navigate to="/login" />}</Layout>
+          <Layout>{isLoggedIn ? <AddPet /> : <Navigate to="/login" />}</Layout>
         }
       />
 

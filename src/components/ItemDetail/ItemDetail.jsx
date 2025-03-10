@@ -6,14 +6,17 @@ import {
   Button,
   Typography,
   CardContent,
+  IconButton,
 } from "@mui/material";
 import CottageIcon from "@mui/icons-material/Cottage";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark"; // Icono relleno
+import EditIcon from "@mui/icons-material/Edit"; // Icono de lápiz
+import DeleteIcon from "@mui/icons-material/Delete"; // Icono de basurero
 import ItemPopup from "../ItemPopup/ItemPopup";
+import { deletePetById } from "../../api/api";
 
 const ItemDetail = ({ item }) => {
-  // Desestructuramos las propiedades relevantes de 'item'
   const {
     petUID,
     name,
@@ -27,14 +30,12 @@ const ItemDetail = ({ item }) => {
     feelingsWithCats,
   } = item;
 
-  // Encontrar la foto de portada usando 'isCoverPhoto'
   const coverPhoto = book.find((photo) => photo.isCoverPhoto)?.url || "";
 
   const [popupOpen, setPopupOpen] = useState(false);
   const [savedItemIds, setSavedItemIds] = useState([]);
 
   useEffect(() => {
-    // Cargar ítems guardados desde localStorage
     const storedItemIds =
       JSON.parse(localStorage.getItem("savedItemIds")) || [];
     setSavedItemIds(storedItemIds);
@@ -49,18 +50,28 @@ const ItemDetail = ({ item }) => {
   };
 
   const handleSave = () => {
-    // Leer siempre el estado más actualizado de localStorage
     const actualSavedItemsIds =
       JSON.parse(localStorage.getItem("savedItemIds")) || [];
-
-    // Actualizar los ítems guardados en función de si el ID actual está en la lista o no
     const updatedSavedItemIds = actualSavedItemsIds.includes(petUID)
       ? actualSavedItemsIds.filter((itemId) => itemId !== petUID)
       : [...actualSavedItemsIds, petUID];
 
-    // Guardar los cambios en localStorage y actualizar el estado
     localStorage.setItem("savedItemIds", JSON.stringify(updatedSavedItemIds));
     setSavedItemIds(updatedSavedItemIds);
+  };
+
+  const handleEdit = () => {
+    console.log("Editar:", petUID);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deletePetById(petUID);
+      console.log("Eliminado correctamente:", petUID);
+      // Aquí puedes agregar lógica adicional como recargar la lista de mascotas
+    } catch (error) {
+      console.error("Error eliminando mascota:", error);
+    }
   };
 
   return (
@@ -126,9 +137,13 @@ const ItemDetail = ({ item }) => {
             variant="contained"
             endIcon={<CottageIcon />}
             onClick={handleOpenPopup}
-          >
-            DARLE HOGAR
-          </Button>
+          ></Button>
+          <IconButton color="primary" onClick={handleEdit}>
+            <EditIcon />
+          </IconButton>
+          <IconButton color="error" onClick={handleDelete}>
+            <DeleteIcon />
+          </IconButton>
         </CardActions>
       </Card>
       <ItemPopup open={popupOpen} onClose={handleClosePopup} item={item} />
