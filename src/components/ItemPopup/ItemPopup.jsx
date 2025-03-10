@@ -9,18 +9,22 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Carousel from "react-material-ui-carousel";
-
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 
 const ItemPopup = ({ open, onClose, item }) => {
-  const { setPetId } = useContext(AppContext);
+  const { savePetId, savePetName, savePetPhotoUrl } = useContext(AppContext);
+  const navigate = useNavigate();
 
   const handleClose = () => {
     onClose();
   };
 
   const handleSavePetId = () => {
-    setPetId(item.id);
+    savePetId(item.id);
+    savePetName(item.name);
+    savePetPhotoUrl(item.book[0].url);
+    navigate("/adoption");
   };
 
   return (
@@ -126,7 +130,7 @@ const ItemPopup = ({ open, onClose, item }) => {
               onClick={handleSavePetId}
               sx={{ mt: 2 }}
             >
-              Boton1
+              Adoptar
             </Button>
           </Box>
         ) : (

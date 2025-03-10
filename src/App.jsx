@@ -2,13 +2,14 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Layout from "./components/Layout/Layout";
 import Home from "./screens/Home";
 import Profile from "./screens/Profile";
+import Adoption from "./screens/Adoption";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Adoptions from "./screens/Adoptions";
 import AddPet from "./screens/AddPet";
 
 function App() {
-  const isLoggedIn = localStorage.getItem("uid"); // Verificar si el UID está en localStorage
+  const isLoggedIn = localStorage.getItem("uid");
 
   return (
     <Routes>
@@ -23,22 +24,27 @@ function App() {
       <Route
         path="/profile"
         element={
-          <Layout>
-            {isLoggedIn ? (
-              <Profile profileId={isLoggedIn} isEditable={true} />
-            ) : (
-              <Navigate to="/login" />
-            )}
-          </Layout>
+          isLoggedIn ? (
+            <Layout>
+              <Profile profileId={isLoggedIn} isEditable />
+            </Layout>
+          ) : (
+            <Navigate to="/login" />
+          )
         }
       />
       <Route
         path="/add-pet"
         element={
-          <Layout>{isLoggedIn ? <AddPet /> : <Navigate to="/login" />}</Layout>
+          isLoggedIn ? (
+            <Layout>
+              <AddPet />
+            </Layout>
+          ) : (
+            <Navigate to="/login" />
+          )
         }
       />
-
       <Route
         path="/login"
         element={
@@ -58,16 +64,16 @@ function App() {
       <Route
         path="/adoptions"
         element={
-          <Layout showHeaderFooter={true}>
+          <Layout>
             <Adoptions />
           </Layout>
         }
       />
       <Route
-        path="/add-pet"
+        path="/adoption"
         element={
-          <Layout showHeaderFooter={true}>
-            <AddPet />
+          <Layout>
+            <Adoption />
           </Layout>
         }
       />
