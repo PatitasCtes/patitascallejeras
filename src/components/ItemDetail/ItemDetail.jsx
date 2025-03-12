@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-
 import {
   Card,
   CardActions,
@@ -11,13 +10,14 @@ import {
 } from "@mui/material";
 import CottageIcon from "@mui/icons-material/Cottage";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import BookmarkIcon from "@mui/icons-material/Bookmark"; // Icono relleno
-import EditIcon from "@mui/icons-material/Edit"; // Icono de lápiz
-import DeleteIcon from "@mui/icons-material/Delete"; // Icono de basurero
+import BookmarkIcon from "@mui/icons-material/Bookmark";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import ItemPopup from "../ItemPopup/ItemPopup";
 import { deletePetById } from "../../api/api";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
+import fallbackImage from "../../assets/imgLogo.png";
 
 const ItemDetail = ({ item }) => {
   const {
@@ -38,6 +38,7 @@ const ItemDetail = ({ item }) => {
 
   const [popupOpen, setPopupOpen] = useState(false);
   const [savedItemIds, setSavedItemIds] = useState([]);
+  const [loadedImages, setLoadedImages] = useState({});
 
   useEffect(() => {
     const storedItemIds =
@@ -63,8 +64,10 @@ const ItemDetail = ({ item }) => {
     localStorage.setItem("savedItemIds", JSON.stringify(updatedSavedItemIds));
     setSavedItemIds(updatedSavedItemIds);
   };
+
   const navigate = useNavigate();
   const { savePetId } = useContext(AppContext);
+
   const handleEdit = () => {
     savePetId(item.id);
     navigate(`/edit-pet`);
@@ -75,21 +78,32 @@ const ItemDetail = ({ item }) => {
       await deletePetById(id);
       console.log("Eliminado correctamente:", id);
       window.location.reload();
-      // Aquí puedes agregar lógica adicional como recargar la lista de mascotas
     } catch (error) {
       console.error("Error eliminando mascota:", error);
     }
+  };
+
+  const handleImageLoad = (imageId) => {
+    setLoadedImages((prev) => ({ ...prev, [imageId]: true }));
+    console.log(loadedImages);
   };
 
   return (
     <>
       <Card sx={{ maxWidth: 345, margin: "auto" }}>
         <CardMedia
-          component={"img"}
-          image={coverPhoto}
+          component="img"
+          image={loadedImages[petUID] ? coverPhoto : fallbackImage}
           height="200"
           alt="Item cover"
+          onLoad={() => {
+            handleImageLoad(petUID);
+          }}
+          onError={() => {
+            setLoadedImages((prev) => ({ ...prev, [petUID]: false }));
+          }}
         />
+
         <CardContent>
           <Typography
             sx={{ fontSize: 24 }}
