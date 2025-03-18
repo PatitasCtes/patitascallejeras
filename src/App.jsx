@@ -8,10 +8,11 @@ import Register from "./screens/Register";
 import Adoptions from "./screens/Adoptions";
 import AddPet from "./screens/AddPet";
 import EditPet from "./screens/EditPet";
-
+import ResumeAdoption from "./screens/ResumeAdoption";
 function App() {
   const isLoggedIn = localStorage.getItem("uid");
 
+  
   return (
     <Routes>
       <Route
@@ -87,6 +88,14 @@ function App() {
         element={
           <Layout>
             <Adoption />
+          </Layout>
+        }
+      />
+      <Route
+        path="/resume-adoption"
+        element={
+          <Layout>
+            <ResumeAdoption />
           </Layout>
         }
       />

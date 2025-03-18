@@ -1,11 +1,31 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import { AppContext } from "../context/AppContext";
 import QuestionCard from "../components/QuestionCard/QuestionCard";
 import imgOk from "../assets/imgLogo.png";
+
 const Adoption = () => {
   const navigate = useNavigate();
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+  const {
+    petId,
+    petName,
+    petPhotoUrl,
+    formAdoption,
+    saveFormAdoptionAswered,
+    answerNumber,
+    setAnswerNumber,
+  } = useContext(AppContext);
+
+  // Verificar si petId no está definido y redirigir al Home
+  useEffect(() => {
+    if (!petId) {
+      navigate("/");
+    }
+  }, [petId, navigate]);
+
   const handleCancel = () => {
     saveFormAdoptionAswered({});
     setAnswerNumber(0);
@@ -13,22 +33,12 @@ const Adoption = () => {
     navigate("/adoptions");
   };
 
-  const {
-    petId,
-    petName,
-    petPhotoUrl,
-    formAdoption,
-    formAdoptionAswered,
-    saveFormAdoptionAswered,
-    answerNumber,
-    setAnswerNumber,
-  } = useContext(AppContext);
-
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-
   const handleAnswer = (questionId, answer) => {
     saveFormAdoptionAswered((prev) => ({
       ...prev,
+      PetId: petId,
+      PetName: petName,
+      PetPhotoUrl: petPhotoUrl,
       respuestas: [
         ...prev.respuestas.filter((res) => res.preguntaId !== questionId),
         { preguntaId: questionId, respuesta: answer },
@@ -43,7 +53,7 @@ const Adoption = () => {
     } else {
       setCurrentQuestionIndex(1);
       setAnswerNumber(1);
-      navigate("/adoptions");
+      navigate("/resume-adoption");
     }
   };
 
@@ -73,13 +83,13 @@ const Adoption = () => {
         variant="h2"
         gutterBottom
         sx={{
-          fontSize: { xs: "1.2rem", sm: "2rem" }, // Ajusta el tamaño en móvil
-          textAlign: { xs: "center", sm: "left" }, // Centra el texto en móvil
+          fontSize: { xs: "1.2rem", sm: "2rem" },
+          textAlign: { xs: "center", sm: "left" },
         }}
       >
         Por favor completa el siguiente formulario para adoptar a {petName} 🐾
       </Typography>
-      {answerNumber + 1 == formAdoption.preguntas.length ? (
+      {answerNumber + 1 === formAdoption.preguntas.length ? (
         <img
           src={imgOk}
           alt={petName}
@@ -101,7 +111,6 @@ const Adoption = () => {
           }}
         />
       )}
-
       <Typography variant="h6" gutterBottom>
         {answerNumber} / {formAdoption.preguntas.length}
       </Typography>
