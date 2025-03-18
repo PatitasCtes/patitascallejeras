@@ -30,6 +30,11 @@ const Navigationbar = () => {
       icon: <DashboardIcon />,
     },
     {
+      title: "Formularios",
+      path: "/forms",
+      icon: <DashboardIcon />,
+    },
+    {
       title: isLoggedIn ? "Perfil" : "Ingresar",
       path: isLoggedIn ? "/profile" : "/login",
       icon: <AccountCircleIcon />,
