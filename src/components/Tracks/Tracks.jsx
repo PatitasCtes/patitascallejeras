@@ -1,5 +1,6 @@
 import { Player } from "@lottiefiles/react-lottie-player";
-import animationData from "./tracks.json"; // Ajusta la ruta según la ubicación del archivo
+import animationData from "./gatin.json"; 
+
 import { Box } from "@mui/material";
 import { useEffect } from "react";
 
