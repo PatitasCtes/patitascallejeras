@@ -20,7 +20,14 @@ const theme = createTheme({
       main: "#26212E",
     },
     success: {
-      main: "#FFFFFF",
+      main: "#4CAF50",
+    },
+    background: {
+      default: "#FFFFFF",
+      paper: "#F5F5F5",
+    },
+    text: {
+      primary: "#26212E",
     },
   },
 });
