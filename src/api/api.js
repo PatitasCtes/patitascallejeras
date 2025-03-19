@@ -163,10 +163,11 @@ export const fetchFormById = async (formId) => {
     }
 };
 
-// Obtener formularios
-export const fetchForms = async () => {
+// Obtener formularios con filtros
+export const fetchForms = async (filters = {}) => {
     try {
-        const response = await fetch(`${API_FORM_BASE_URL}/forms`);
+        const queryParams = new URLSearchParams(filters).toString();
+        const response = await fetch(`${API_FORM_BASE_URL}/forms?${queryParams}`);
         if (!response.ok) {
             throw new Error("Error fetching forms");
         }
@@ -176,6 +177,45 @@ export const fetchForms = async () => {
         throw error;
     }
 };
+
+// Modificar formularios con filtros
+export const updateForms = async (filters = {}, data) => {
+    try {
+        const queryParams = new URLSearchParams(filters).toString();
+        const response = await fetch(`${API_FORM_BASE_URL}/forms?${queryParams}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            throw new Error("Error updating forms");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error updating forms:", error);
+        throw error;
+    }
+};
+
+// Eliminar formularios con filtros
+export const deleteForms = async (filters = {}) => {
+    try {
+        const queryParams = new URLSearchParams(filters).toString();
+        const response = await fetch(`${API_FORM_BASE_URL}/forms?${queryParams}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            throw new Error("Error deleting forms");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error deleting forms:", error);
+        throw error;
+    }
+};
+
 // Guardar formulario con respuestas
 export const saveForm = async (formData) => {
     try {
@@ -192,6 +232,42 @@ export const saveForm = async (formData) => {
         return await response.json();
     } catch (error) {
         console.error("Error saving form:", error);
+        throw error;
+    }
+};
+
+// Actualizar formulario por ID
+export const updateFormById = async (formId, updatedData) => {
+    try {
+        const response = await fetch(`${API_FORM_BASE_URL}/form/id/${formId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedData),
+        });
+        if (!response.ok) {
+            throw new Error("Error updating form");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error updating form:", error);
+        throw error;
+    }
+};
+
+// Eliminar formulario por ID
+export const deleteFormById = async (formId) => {
+    try {
+        const response = await fetch(`${API_FORM_BASE_URL}/form/id/${formId}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            throw new Error("Error deleting form");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error deleting form:", error);
         throw error;
     }
 };

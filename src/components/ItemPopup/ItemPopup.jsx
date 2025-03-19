@@ -42,7 +42,7 @@ const ItemPopup = ({ open, onClose, item }) => {
 
         {item ? (
           <Box>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h5" gutterBottom sx={{color: "primary.main"}}>
               {item.name}
             </Typography>
             <Carousel>
@@ -67,22 +67,26 @@ const ItemPopup = ({ open, onClose, item }) => {
             <Typography variant="body1" mt={1}>
               <strong>Estado:</strong> {item.status}
             </Typography>
-            <Typography
-              variant="body1"
-              mt={1}
-              sx={{ color: item.vaccinated ? "green" : "red" }}
+            <Box sx={{ display: "flex", flexDirection: "column",justifyContent: "center", mt: 2 }}>
+            <Button
+              variant="outlined"
+              color={item.vaccinated ? "success" : "primary"}
+              size="small"
+              sx={{ ml: 1 }}
             >
-              <strong>{item.vaccinated ? "Vacunado" : "Sin vacunas"}</strong>{" "}
-              {item.vaccinatedObs}
-            </Typography>
-            <Typography
-              variant="body1"
-              mt={1}
-              sx={{ color: item.castred ? "green" : "red" }}
+              <strong>{item.vaccinated ? "Vacunado " : "Sin vacunas "}</strong>
+              {' . '}{item.vaccinatedObs}
+            </Button>
+            <Button
+              variant="outlined"
+              color={item.castred ? "success" : "primary"}
+              size="small"
+              sx={{ ml: 1 }}
             >
-              <strong>{item.castred ? "Castrado" : "Sin castrar"}</strong>{" "}
+              <strong>{item.castred ? "Castrado " : "Sin castrar "}</strong>{' . '}
               {item.castredObs}
-            </Typography>
+            </Button>
+          </Box>
             <FeelingsSection item={item} />
             <Typography variant="body1" mt={1}>
               <strong>Observaciones:</strong> {item.obs || "No disponible"}

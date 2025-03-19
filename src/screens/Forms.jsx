@@ -1,16 +1,89 @@
+import React, { useState, useEffect } from "react";
 import { getRandomEmoji } from "../utils/getRandomEmoji";
-import { Container, Box, Button, Typography, IconButton } from "@mui/material";
-
-import AddIcon from "@mui/icons-material/Add";
+import { Container, Box, Button, Typography, Select, MenuItem, FormControl, InputLabel, Alert } from "@mui/material";
+import Loader from "../components/Loader/Loader";
+import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import FormList from "../components/FormList/FormList";
+import { fetchForms, fetchPetsByCriteria, updateForms } from "../api/api";
 
-const Adoptions = () => {
+const Forms = () => {
   const navigate = useNavigate();
+  const [forms, setForms] = useState([]);
+  const [pets, setPets] = useState([]);
+  const [filters, setFilters] = useState({ petId: "", orderBy: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleAddAdoption = () => {
-    navigate("/add-pet");
+  useEffect(() => {
+    const loadFormsAndPets = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [formsData, petsData] = await Promise.all([
+          fetchForms(),
+          fetchPetsByCriteria({ status: "Disponible" }),
+        ]);
+
+        setForms(formsData);
+        setPets(petsData);
+      } catch (err) {
+        setError("Error al cargar los datos. Intenta nuevamente.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFormsAndPets();
+  }, []);
+
+  const handleCloseForms = async () => {
+    const { petId } = filters;
+    
+    if (petId) {
+      try {
+        await updateForms({ PetId: petId }, { status: "Cerrado" });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error al cerrar los formularios:", error);
+      }
+    }
   };
+
+  const handleFilterChange = async (e) => {
+    const { name, value } = e.target;
+    const updatedFilters = { ...filters, [name]: value };
+    setFilters(updatedFilters);
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      let formsData = [];
+      if (name === "petId" && value) {
+        formsData = await fetchForms({ PetId: value });
+      } else {
+        formsData = await fetchForms();
+      }
+
+      setForms(formsData);
+    } catch (err) {
+      setError("Error al aplicar los filtros. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredForms = forms
+    .sort((a, b) => {
+      if (filters.orderBy === "fechaCreacion") {
+        return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
+      } else if (filters.orderBy === "petId") {
+        return a.petId.toString().localeCompare(b.petId.toString());
+      }
+      return 0;
+    });
 
   return (
     <Container>
@@ -26,38 +99,100 @@ const Adoptions = () => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" }, // Cambia a columna en móvil
-            justifyContent: { sm: "space-between" }, // Espaciado solo en pantallas más grandes
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: { sm: "space-between" },
             alignItems: "center",
-            gap: { xs: 2, sm: 0 }, // Espaciado entre elementos en móvil
+            gap: { xs: 2, sm: 0 },
           }}
         >
           <Typography
             variant="h2"
             gutterBottom
             sx={{
-              fontSize: { xs: "1.5rem", sm: "2.5rem" }, // Ajusta el tamaño en móvil
-              textAlign: { xs: "center", sm: "left" }, // Centra el texto en móvil
+              fontSize: { xs: "1.5rem", sm: "2.5rem" },
+              textAlign: { xs: "center", sm: "left" },
             }}
           >
             Listado de Formularios de Adopción {getRandomEmoji()}
           </Typography>
 
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1, // Espaciado entre botones
-            }}
-          >
-            
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Button
+              variant={filters.petId ? "contained" : "outlined"}
+              startIcon={<CloseIcon />}
+              onClick={handleCloseForms}
+              color={filters.petId ? "primary" : "info"}
+            >
+              Cerrar Formularios
+            </Button>
           </Box>
+        </Box>
+
+        {/* Filtros */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+            marginTop: 2,
+          }}
+        >
+          <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+            <InputLabel id="filter-petId">Filtrar por Mascota</InputLabel>
+            <Select
+              labelId="filter-petId"
+              name="petId"
+              value={filters.petId}
+              onChange={handleFilterChange}
+              label="Filtrar por Mascota"
+            >
+              <MenuItem value="">
+                <em>Todos</em>
+              </MenuItem>
+              {pets.map((pet) => (
+                <MenuItem key={pet.id} value={pet.id}>
+                  {pet.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+            <InputLabel id="order-by">Ordenar por</InputLabel>
+            <Select
+              labelId="order-by"
+              name="orderBy"
+              value={filters.orderBy}
+              onChange={handleFilterChange}
+              label="Ordenar por"
+            >
+              <MenuItem value="">
+                <em>Ninguno</em>
+              </MenuItem>
+              <MenuItem value="fechaCreacion">Recientes</MenuItem>
+              <MenuItem value="petId">Mascota</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
       </Box>
 
-      <FormList />
+      {/* Lista de formularios */}
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Loader />
+        </Box>
+      ) : error ? (
+        <Alert severity="error">{error}</Alert>
+      ) : filteredForms.length === 0 ? (
+        <Typography variant="body1">
+          No se encontraron formularios de adopción.
+        </Typography>
+      ) : (
+        <FormList forms={filteredForms} />
+      )}
     </Container>
   );
 };
 
-export default Adoptions;
+export default Forms;
+
