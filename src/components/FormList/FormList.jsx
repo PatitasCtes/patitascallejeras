@@ -54,7 +54,7 @@ const FormList = ({ forms }) => {
                 "Sin nombre de mascota"
               }
               
-              secondary={`${form.respuestas[25].respuesta} |  ${form.respuestas[1].respuesta} |  ${form.respuestas[4].respuesta} |  ${form.respuestas[9].respuesta} |  ${form.respuestas[6].respuesta} |  ${form.respuestas[29].respuesta} |  ${form.fechaCreacion}`}
+              secondary={`${form.respuestas[25].respuesta} |  ${form.respuestas[1].respuesta} |  ${form.respuestas[4].respuesta} |  ${form.respuestas[9].respuesta} |  ${form.respuestas[6].respuesta} |  ${form.respuestas[29].respuesta} |  ${new Date(form.fechaCreacion).toLocaleString("es-AR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}`}
             />
               
             </Box>

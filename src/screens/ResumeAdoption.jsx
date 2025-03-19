@@ -130,7 +130,7 @@ const ResumeAdoption = () => {
                     />
                   ) : (
 
-                    <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontSize: '1.5rem' }}>
+                    <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontSize: '1rem' }}>
                       {respuestaValue}
                     </Typography>
                   )
