@@ -39,6 +39,8 @@ const Adoption = () => {
       PetId: petId,
       PetName: petName,
       PetPhotoUrl: petPhotoUrl,
+      fechaCreacion: new Date().toISOString(),
+      status: "NUEVO",
       respuestas: [
         ...prev.respuestas.filter((res) => res.preguntaId !== questionId),
         { preguntaId: questionId, respuesta: answer },
