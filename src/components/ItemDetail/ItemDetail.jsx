@@ -85,7 +85,6 @@ const ItemDetail = ({ item }) => {
 
   const handleImageLoad = (imageId) => {
     setLoadedImages((prev) => ({ ...prev, [imageId]: true }));
-    console.log(loadedImages);
   };
 
   return (

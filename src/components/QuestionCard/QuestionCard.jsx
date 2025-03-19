@@ -17,9 +17,9 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
   );
 
   // Limpiar el estado de la respuesta cuando cambie la pregunta
-  useEffect(() => {
-    setAnswer(question.tipo === "opcion_multiple" ? [] : "");
-  }, [question]);
+  // useEffect(() => {
+  //   setAnswer(question.tipo === "opcion_multiple" ? [] : "");
+  // }, [question]);
 
   const handleInputChange = (e) => {
     setAnswer(e.target.value);
@@ -38,7 +38,18 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
 
   const handleNext = () => {
     onAnswer(question.id, answer);
-    onNext();
+    let nextAnswer = onNext();
+    if (!nextAnswer) {
+      setAnswer(question.tipo === "opcion_multiple" ? [] : "");
+    }else{
+      setAnswer(nextAnswer);
+    }
+  };
+
+  const handlePrevious = () => {
+    let valuePrevious = onPrevious();
+    setAnswer(valuePrevious);
+   
   };
 
   return (
@@ -98,15 +109,7 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
       )}
 
       {question.tipo === "opcion_multiple" && (
-        <Box
-        // sx={{
-        //   maxHeight: 200, // Altura máxima para el scroll
-        //   overflowY: "auto", // Scroll vertical si excede la altura
-        //   padding: 1,
-        //   border: "1px solid #e0e0e0",
-        //   borderRadius: 1,
-        // }}
-        >
+        <Box>
           <FormGroup>
             {question.opciones.map((opcion, index) => (
               <FormControlLabel
@@ -126,7 +129,7 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
       )}
 
       <Box sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}>
-        <Button variant="outlined" onClick={onPrevious}>
+        <Button variant="outlined" onClick={handlePrevious}>
           Anterior
         </Button>
         <Button variant="contained" onClick={handleNext}>

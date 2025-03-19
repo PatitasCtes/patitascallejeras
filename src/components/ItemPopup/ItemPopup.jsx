@@ -89,7 +89,7 @@ const ItemPopup = ({ open, onClose, item }) => {
           </Box>
             <FeelingsSection item={item} />
             <Typography variant="body1" mt={1}>
-              <strong>Observaciones:</strong> {item.obs || "No disponible"}
+              <strong>Observaciones:</strong> {item.obs || "-"}
             </Typography>
 
             {/* Más información opcional si está disponible */}

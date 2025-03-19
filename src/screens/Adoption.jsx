@@ -15,6 +15,7 @@ const Adoption = () => {
     petPhotoUrl,
     formAdoption,
     saveFormAdoptionAswered,
+    formAdoptionAswered,
     answerNumber,
     setAnswerNumber,
   } = useContext(AppContext);
@@ -49,20 +50,30 @@ const Adoption = () => {
   };
 
   const handleNext = () => {
+    let nextAnswer = ''
     if (currentQuestionIndex < formAdoption.preguntas.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setAnswerNumber((prev) => prev + 1);
+      nextAnswer = formAdoptionAswered.respuestas.filter((res) => res.preguntaId == answerNumber+2)[0]?.respuesta;
+      console.log(nextAnswer);
     } else {
       setCurrentQuestionIndex(1);
       setAnswerNumber(1);
+
       navigate("/resume-adoption");
     }
+    return nextAnswer
   };
 
   const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
+    if (answerNumber > 0) {
       setCurrentQuestionIndex((prev) => prev - 1);
       setAnswerNumber((prev) => prev - 1);
+      console.log(answerNumber);
+      let previousAnswer = formAdoptionAswered.respuestas.filter((res) => res.preguntaId == answerNumber)[0].respuesta;
+      console.log(previousAnswer);
+      return previousAnswer
+      
     }
   };
 

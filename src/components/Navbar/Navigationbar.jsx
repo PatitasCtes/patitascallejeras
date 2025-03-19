@@ -11,7 +11,7 @@ import NavListDrawer from "./NavListDrawer";
 import { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import GroupIcon from "@mui/icons-material/Group";
+import PetIcon from "@mui/icons-material/Pets";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HomeIcon from "@mui/icons-material/Home";
 
@@ -27,7 +27,7 @@ const Navigationbar = () => {
     {
       title: "Adopciones",
       path: "/adoptions",
-      icon: <DashboardIcon />,
+      icon: <PetIcon />,
     },
     {
       title: "Formularios",
