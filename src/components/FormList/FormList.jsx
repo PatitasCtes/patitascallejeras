@@ -16,6 +16,7 @@ const FormList = ({ forms }) => {
   const navigate = useNavigate();
 
   const handleViewForm = (formId) => {
+    navigate(`/form/${formId}`);
     console.log("Ver formulario con ID:", formId);
   };
   const handleCloseForm = (formId) => {
@@ -29,6 +30,7 @@ const FormList = ({ forms }) => {
           <ListItem
             key={form.id}
             button
+            onClick={() => handleViewForm(form.id)}
             sx={{
               borderBottom: "1px solid #eee",
               "&:last-child": { borderBottom: "none" },
