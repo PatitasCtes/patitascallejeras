@@ -49,7 +49,17 @@ const FormList = ({ forms }) => {
               </ListItemAvatar>
             <ListItemText
               primaryTypographyProps={{
-                color: form.status === "NUEVO" ? "primary.main" : "black",
+                color: form.status === "Nuevo"
+                  ? "primary.main"
+                  : form.status === "Revisado"
+                  ? "info.main"
+                  : form.status === "Rechazado"
+                  ? "warning.main"
+                  : form.status === "Aprobado"
+                  ? "success.main"
+                  : form.status === "Cerrado"
+                  ? "inherit"
+                  : "black",
               }}
               primary={
                 `${form.respuestas[2].respuesta} (${form.PetName}) ${form.status}` ||

@@ -12,16 +12,18 @@ import {
   Snackbar,
   Alert,
   Tooltip,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import { AppContext } from "../context/AppContext";
 
 import imgOk from "../assets/imgLogo.png";
 import OkAdoption from "../components/OkAdoption/OkAdoption";
-import { saveForm, fetchFormById } from "../api/api";
-import { AppContext } from "../context/AppContext";
+import { updateFormById, fetchFormById } from "../api/api";
 
 const Form = () => {
   const { formId } = useParams();
@@ -31,40 +33,55 @@ const Form = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [formAnswered, setFormAdoptionAswered] = useState({});
+  const [status, setStatus] = useState("");
   const { formAdoption } = useContext(AppContext);
 
   useEffect(() => {
     if (formId) {
-      console.log('fetchFormById', formId);
-      
       fetchFormById(formId).then((form) => {
         setFormAdoptionAswered(form);
+        setStatus(form.status);
         setLoading(false);
       });
     }
   }, [formId]);
 
-  const handleCancel = () => {
-    setFormAdoptionAswered({});
-    navigate("/forms");
-  };
-
-  const handleConfirm = async () => {
+  const handleStatusChange = async (event) => {
+    const newStatus = event.target.value;
+    setStatus(newStatus);
     try {
-      
-      setSnackbarMessage("Formulario Aprobado con éxito !!");
+      await updateFormById(formId, { status: newStatus });
+      setSnackbarMessage("Estado actualizado con éxito.");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
-      setFormAdoptionAswered({});
-      setTimeout(() => {
-        navigate("/forms");
-      }, 3500);
     } catch (error) {
-      console.error("Error al enviar el formulario:", error);
-      setSnackbarMessage("Hubo un error al enviar el formulario.");
+      console.error("Error al actualizar el estado:", error);
+      setSnackbarMessage("Error al actualizar el estado.");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
     }
+  };
+
+  const copyToClipboard = () => {
+    const selectedQuestions = [5, 7, 3, 6, 8];
+    const textToCopy = `Mascota: ${formAnswered.PetName}\n` +
+      formAnswered.respuestas
+        .filter((respuesta) => selectedQuestions.includes(respuesta.preguntaId))
+        .map((respuesta) => {
+          const pregunta = formAdoption.preguntas.find(
+            (p) => p.id === respuesta.preguntaId
+          );
+          const respuestaValue = Array.isArray(respuesta.respuesta)
+            ? respuesta.respuesta.join(", ")
+            : respuesta.respuesta;
+          return `${pregunta?.pregunta}: ${respuestaValue}`;
+        })
+        .join("\n");
+
+    navigator.clipboard.writeText(textToCopy);
+    setSnackbarMessage("Información copiada al portapapeles.");
+    setSnackbarSeverity("info");
+    setSnackbarOpen(true);
   };
 
   const handleCloseSnackbar = (event, reason) => {
@@ -87,22 +104,56 @@ const Form = () => {
         p: 3,
       }}
     >
-      <Typography variant="h4" color={"primary.main"} gutterBottom>
+      <Typography variant="h7" color={"primary.main"} gutterBottom>
         {snackbarMessage}
       </Typography>
 
-      <Typography variant="h5" gutterBottom>
-        Solicitud para adoptar a <strong>{formAnswered.PetName}</strong>
-      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+        <Typography variant="h5" gutterBottom>
+          Solicitud para adoptar a <strong>{formAnswered.PetName}</strong>
+        </Typography>
+        <Tooltip title="Copiar información al portapapeles">
+          <IconButton color="primary" onClick={copyToClipboard}>
+            <ContentCopyIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
       <img
         src={formAnswered.PetPhotoUrl}
-        alt={formAnswered.petName}
+        alt={formAnswered.PetName}
         style={{
           width: "90px",
           height: "90px",
           borderRadius: "50%",
         }}
       />
+
+      <Box sx={{ mt: 2, mb: 2, width: "100%", maxWidth: 600 }}>
+        <Select
+          value={status}
+          onChange={handleStatusChange}
+          fullWidth
+          variant="outlined"
+        >
+          <MenuItem value="Nuevo">
+            <Typography color="primary">Nuevo</Typography>
+          </MenuItem>
+          <MenuItem value="Revisado">
+            <Typography color="info">Revisado</Typography>
+          </MenuItem>
+          <MenuItem value="Aprobado">
+            <Typography color="success">Aprobado</Typography>
+          </MenuItem>
+          <MenuItem value="Rechazado">
+            <Typography color="warning">Rechazado</Typography>
+          </MenuItem>
+          <MenuItem value="Cerrado">
+            <Typography color="inherit">Cerrado</Typography>
+          </MenuItem>
+        </Select>
+      </Box>
+
       <List sx={{ width: "100%", maxWidth: 600 }}>
         {formAnswered.respuestas &&
           formAnswered.respuestas.map((respuesta) => {
@@ -127,12 +178,12 @@ const Form = () => {
                     </Typography>
                   }
                 />
-                <Tooltip title="Copiar al portapapeles">
+                <Tooltip title="Copiar respuesta al portapapeles">
                   <IconButton
-                  color="primary"
+                    color="primary"
                     onClick={() => {
                       navigator.clipboard.writeText(respuestaValue);
-                      setSnackbarMessage("Respuesta copiada al portapapeles");
+                      setSnackbarMessage("Respuesta copiada al portapapeles.");
                       setSnackbarSeverity("info");
                       setSnackbarOpen(true);
                     }}
@@ -140,7 +191,7 @@ const Form = () => {
                     <ContentCopyIcon />
                   </IconButton>
                 </Tooltip>
-                {(respuesta.preguntaId === 8) && (
+                {respuesta.preguntaId === 8 && (
                   <IconButton
                     component="a"
                     href={`https://wa.me/${respuestaValue}`}
@@ -159,15 +210,9 @@ const Form = () => {
           sx={{ mr: 2 }}
           variant="outlined"
           color="error"
-          onClick={handleCancel}
+          onClick={() => navigate("/forms")}
         >
           Salir
-        </Button>
-        <Button sx={{ mr: 2 }} variant="contained" color="primary" onClick={handleConfirm}>
-          Aprobar
-        </Button>
-        <Button variant="outlined" color="primary" onClick={handleConfirm}>
-          Cerrar
         </Button>
       </Box>
 
@@ -190,4 +235,3 @@ const Form = () => {
 };
 
 export default Form;
-

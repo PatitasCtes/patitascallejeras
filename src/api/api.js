@@ -239,8 +239,8 @@ export const saveForm = async (formData) => {
 // Actualizar formulario por ID
 export const updateFormById = async (formId, updatedData) => {
     try {
-        const response = await fetch(`${API_FORM_BASE_URL}/form/id/${formId}`, {
-            method: "PUT",
+        const response = await fetch(`${API_FORM_BASE_URL}/form/${formId}`, {
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
