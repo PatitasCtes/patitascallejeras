@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Typography, CardMedia, useMediaQuery, Grid } from "@mui/material";
+import { Box, Typography, CardMedia, useMediaQuery, Grid ,IconButton} from "@mui/material";
 import PaymentIcon from "@mui/icons-material/Payment";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import Carousel from "react-material-ui-carousel";
 import h1 from "../assets/home-images/h1.jpg";
 import h2 from "../assets/home-images/h2.jpg";
@@ -38,13 +39,30 @@ const Home = () => {
       >
         Rescate de animales 💜
       </Typography>
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{ mb: 3, color: "GrayText.primary" }}
+
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+        }}
       >
-        #castrarsalvavidas
-      </Typography>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{ mr: 1, color: "GrayText.primary" }}
+        >
+          #castrarsalvavidas
+        </Typography>
+        <IconButton
+          color="primary"
+          href="https://www.instagram.com/patitascallejera/?hl=es"
+          target="_blank"
+          rel="noopener"
+          size="large"
+        >
+          <InstagramIcon />
+        </IconButton>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -65,6 +83,14 @@ const Home = () => {
         </Typography>
       </Box>
       <CarouselHome isSmallScreen={isSmallScreen} images={images} />
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{ mb: 3,mt: 3, color: "GrayText.main" , fontSize: 15}}
+      >
+        Te gustaria que tu mascota aparezca aquí? Envianos su foto a nuestras
+        redes 💜
+      </Typography>
     </Box>
   );
 };
