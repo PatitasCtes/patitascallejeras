@@ -1,46 +1,78 @@
 import React, { useState, useEffect } from "react";
 import { getRandomEmoji } from "../utils/getRandomEmoji";
-import { Container, Box, Button, Typography, Select, MenuItem, FormControl, InputLabel, Alert } from "@mui/material";
+import {
+  Container,
+  Box,
+  Button,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Alert,
+  TextField,
+} from "@mui/material";
 import Loader from "../components/Loader/Loader";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import FormList from "../components/FormList/FormList";
-import { fetchForms, fetchPetsByCriteria, updateForms } from "../api/api";
+import {
+  fetchForms,
+  fetchPetsByCriteria,
+  updateForms,
+  searchForms,
+} from "../api/api";
 
 const Forms = () => {
   const navigate = useNavigate();
   const [forms, setForms] = useState([]);
   const [pets, setPets] = useState([]);
-  const [filters, setFilters] = useState({ petId: "", orderBy: "" });
+  const [filters, setFilters] = useState(() => {
+    // Cargar filtros desde localStorage o usar valores predeterminados
+    const storedFilters = localStorage.getItem("formsFilters");
+    return storedFilters
+      ? JSON.parse(storedFilters)
+      : { petId: "", orderBy: "" };
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(() => {
+    // Cargar searchQuery desde localStorage o usar valor predeterminado
+    return localStorage.getItem("formsSearchQuery") || "";
+  });
 
   useEffect(() => {
     const loadFormsAndPets = async () => {
-      try {
-        setLoading(true);
-        setError(null);
+        try {
+            setLoading(true);
+            setError(null);
 
-        const [formsData, petsData] = await Promise.all([
-          fetchForms(),
-          fetchPetsByCriteria({ status: "Disponible" }),
-        ]);
+            const [formsData, petsData] = await Promise.all([
+                fetchForms(),
+                fetchPetsByCriteria({ status: "Disponible" }),
+            ]);
 
-        setForms(formsData);
-        setPets(petsData);
-      } catch (err) {
-        setError("Error al cargar los datos. Intenta nuevamente.");
-      } finally {
-        setLoading(false);
-      }
+            setForms(formsData);
+            setPets(petsData);
+
+            // Ejecutar búsqueda si hay searchQuery al cargar la página
+            if (searchQuery) {
+                const searchResults = await searchForms(searchQuery);
+                setForms(searchResults);
+            }
+        } catch (err) {
+            setError("Error al cargar los datos. Intenta nuevamente.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     loadFormsAndPets();
-  }, []);
+}, [searchQuery]); // Agregar searchQuery como dependencia del useEffect
 
   const handleCloseForms = async () => {
     const { petId } = filters;
-    
+
     if (petId) {
       try {
         await updateForms({ PetId: petId }, { status: "Cerrado" });
@@ -55,6 +87,8 @@ const Forms = () => {
     const { name, value } = e.target;
     const updatedFilters = { ...filters, [name]: value };
     setFilters(updatedFilters);
+    // Guardar filtros en localStorage
+    localStorage.setItem("formsFilters", JSON.stringify(updatedFilters));
 
     try {
       setLoading(true);
@@ -75,15 +109,34 @@ const Forms = () => {
     }
   };
 
-  const filteredForms = forms
-    .sort((a, b) => {
-      if (filters.orderBy === "fechaCreacion") {
-        return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
-      } else if (filters.orderBy === "petId") {
-        return a.petId.toString().localeCompare(b.petId.toString());
-      }
-      return 0;
-    });
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    // Guardar searchQuery en localStorage
+    localStorage.setItem("formsSearchQuery", e.target.value);
+  };
+
+  const handleSearchSubmit = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const searchResults = await searchForms(searchQuery);
+      setForms(searchResults);
+    } catch (err) {
+      setError("Error al realizar la búsqueda. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredForms = forms.sort((a, b) => {
+    if (filters.orderBy === "fechaCreacion") {
+      return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
+    } else if (filters.orderBy === "petId") {
+      return a.petId.toString().localeCompare(b.petId.toString());
+    }
+    return 0;
+  });
 
   return (
     <Container>
@@ -109,7 +162,7 @@ const Forms = () => {
             variant="h2"
             gutterBottom
             sx={{
-              fontSize: { xs: "1.5rem", sm: "2.5rem" },
+              fontSize: { xs: "1rem", sm: "2rem" },
               textAlign: { xs: "center", sm: "left" },
             }}
           >
@@ -173,6 +226,19 @@ const Forms = () => {
               <MenuItem value="petId">Mascota</MenuItem>
             </Select>
           </FormControl>
+          <TextField
+            label="Buscar"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearchSubmit();
+              }
+            }}
+          />
+          <Button variant="contained" onClick={handleSearchSubmit}>
+            Buscar
+          </Button>
         </Box>
       </Box>
 
@@ -195,4 +261,3 @@ const Forms = () => {
 };
 
 export default Forms;
-
