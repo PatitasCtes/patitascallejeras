@@ -29,11 +29,15 @@ const theme = createTheme({
     text: {
       primary: "#26212E",
     },
+    GrayText: {
+      main: "rgb(79, 77, 81)",
+    },
   },
 });
 // #FFFFFF
 // #26212E
 // #8E6FAB
+//rgb(79, 77, 81)
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
