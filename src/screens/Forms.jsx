@@ -11,6 +11,7 @@ import {
   InputLabel,
   Alert,
   TextField,
+  IconButton,
 } from "@mui/material";
 import Loader from "../components/Loader/Loader";
 import CloseIcon from "@mui/icons-material/Close";
@@ -28,7 +29,6 @@ const Forms = () => {
   const [forms, setForms] = useState([]);
   const [pets, setPets] = useState([]);
   const [filters, setFilters] = useState(() => {
-    // Cargar filtros desde localStorage o usar valores predeterminados
     const storedFilters = localStorage.getItem("formsFilters");
     return storedFilters
       ? JSON.parse(storedFilters)
@@ -37,38 +37,37 @@ const Forms = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(() => {
-    // Cargar searchQuery desde localStorage o usar valor predeterminado
     return localStorage.getItem("formsSearchQuery") || "";
   });
+  const [filtersVisible, setFiltersVisible] = useState(false);
 
   useEffect(() => {
     const loadFormsAndPets = async () => {
-        try {
-            setLoading(true);
-            setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-            const [formsData, petsData] = await Promise.all([
-                fetchForms(),
-                fetchPetsByCriteria({ status: "Disponible" }),
-            ]);
+        const [formsData, petsData] = await Promise.all([
+          fetchForms(),
+          fetchPetsByCriteria({ status: "Disponible" }),
+        ]);
 
-            setForms(formsData);
-            setPets(petsData);
+        setForms(formsData);
+        setPets(petsData);
 
-            // Ejecutar búsqueda si hay searchQuery al cargar la página
-            if (searchQuery) {
-                const searchResults = await searchForms(searchQuery);
-                setForms(searchResults);
-            }
-        } catch (err) {
-            setError("Error al cargar los datos. Intenta nuevamente.");
-        } finally {
-            setLoading(false);
+        if (searchQuery) {
+          const searchResults = await searchForms(searchQuery);
+          setForms(searchResults);
         }
+      } catch (err) {
+        setError("Error al cargar los datos. Intenta nuevamente.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadFormsAndPets();
-}, [searchQuery]); // Agregar searchQuery como dependencia del useEffect
+  }, [searchQuery]);
 
   const handleCloseForms = async () => {
     const { petId } = filters;
@@ -87,7 +86,6 @@ const Forms = () => {
     const { name, value } = e.target;
     const updatedFilters = { ...filters, [name]: value };
     setFilters(updatedFilters);
-    // Guardar filtros en localStorage
     localStorage.setItem("formsFilters", JSON.stringify(updatedFilters));
 
     try {
@@ -111,7 +109,6 @@ const Forms = () => {
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    // Guardar searchQuery en localStorage
     localStorage.setItem("formsSearchQuery", e.target.value);
   };
 
@@ -149,26 +146,24 @@ const Forms = () => {
           padding: 1,
         }}
       >
+        <Typography
+          variant="h2"
+          gutterBottom
+          sx={{
+            fontSize: { xs: "1rem", sm: "2rem" },
+            textAlign: { xs: "center", sm: "left" },
+          }}
+        >
+          Listado de Formularios de Adopción {getRandomEmoji()}
+        </Typography>
         <Box
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            display: { xs: "none", sm: "flex" },
             justifyContent: { sm: "space-between" },
             alignItems: "center",
             gap: { xs: 2, sm: 0 },
           }}
         >
-          <Typography
-            variant="h2"
-            gutterBottom
-            sx={{
-              fontSize: { xs: "1rem", sm: "2rem" },
-              textAlign: { xs: "center", sm: "left" },
-            }}
-          >
-            Listado de Formularios de Adopción {getRandomEmoji()}
-          </Typography>
-
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Button
               variant={filters.petId ? "contained" : "outlined"}
@@ -180,69 +175,76 @@ const Forms = () => {
             </Button>
           </Box>
         </Box>
-
-        {/* Filtros */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-            marginTop: 2,
-          }}
+        <IconButton
+          sx={{ display: { xs: "block", sm: "none" } }}
+          onClick={() => setFiltersVisible(!filtersVisible)}
         >
-          <FormControl variant="outlined" sx={{ minWidth: 120 }}>
-            <InputLabel id="filter-petId">Filtrar por Mascota</InputLabel>
-            <Select
-              labelId="filter-petId"
-              name="petId"
-              value={filters.petId}
-              onChange={handleFilterChange}
-              label="Filtrar por Mascota"
-            >
-              <MenuItem value="">
-                <em>Todos</em>
-              </MenuItem>
-              {pets.map((pet) => (
-                <MenuItem key={pet.id} value={pet.id}>
-                  {pet.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Typography>Filtros</Typography>
+        </IconButton>
 
-          <FormControl variant="outlined" sx={{ minWidth: 120 }}>
-            <InputLabel id="order-by">Ordenar por</InputLabel>
-            <Select
-              labelId="order-by"
-              name="orderBy"
-              value={filters.orderBy}
-              onChange={handleFilterChange}
-              label="Ordenar por"
-            >
-              <MenuItem value="">
-                <em>Ninguno</em>
-              </MenuItem>
-              <MenuItem value="fechaCreacion">Recientes</MenuItem>
-              <MenuItem value="petId">Mascota</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            label="Buscar"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSearchSubmit();
-              }
+        {filtersVisible && (
+          <Box
+            sx={{
+              id: "form-filters",
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2,
+              marginTop: 2,
             }}
-          />
-          <Button variant="contained" onClick={handleSearchSubmit}>
-            Buscar
-          </Button>
-        </Box>
+          >
+            <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+              <InputLabel id="filter-petId">Filtrar por Mascota</InputLabel>
+              <Select
+                labelId="filter-petId"
+                name="petId"
+                value={filters.petId}
+                onChange={handleFilterChange}
+                label="Filtrar por Mascota"
+              >
+                <MenuItem value="">
+                  <em>Todos</em>
+                </MenuItem>
+                {pets.map((pet) => (
+                  <MenuItem key={pet.id} value={pet.id}>
+                    {pet.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+              <InputLabel id="order-by">Ordenar por</InputLabel>
+              <Select
+                labelId="order-by"
+                name="orderBy"
+                value={filters.orderBy}
+                onChange={handleFilterChange}
+                label="Ordenar por"
+              >
+                <MenuItem value="">
+                  <em>Ninguno</em>
+                </MenuItem>
+                <MenuItem value="fechaCreacion">Recientes</MenuItem>
+                <MenuItem value="petId">Mascota</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Buscar"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearchSubmit();
+                }
+              }}
+            />
+            <Button variant="contained" onClick={handleSearchSubmit}>
+              Buscar
+            </Button>
+          </Box>
+        )}
       </Box>
 
-      {/* Lista de formularios */}
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
           <Loader />
@@ -261,3 +263,4 @@ const Forms = () => {
 };
 
 export default Forms;
+
