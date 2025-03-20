@@ -10,6 +10,7 @@ import AddPet from "./screens/AddPet";
 import EditPet from "./screens/EditPet";
 import ResumeAdoption from "./screens/ResumeAdoption";
 import Forms from "./screens/Forms";
+import Form from "./screens/Form";
 function App() {
   const isLoggedIn = localStorage.getItem("uid");
 
@@ -66,6 +67,18 @@ function App() {
           isLoggedIn ? (
             <Layout>
               <Forms />
+            </Layout>
+          ) : (
+            <Navigate to="/login" />
+          )
+        }
+      />
+      <Route
+        path="/form/:formId"
+        element={
+          isLoggedIn ? (
+            <Layout>
+              <Form />
             </Layout>
           ) : (
             <Navigate to="/login" />
