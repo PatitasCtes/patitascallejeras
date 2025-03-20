@@ -11,7 +11,7 @@ const OkAdoption = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "80vh",
+        
         "& .lottie-player": {
           width: "50%",
           "@media (max-width: 600px)": {

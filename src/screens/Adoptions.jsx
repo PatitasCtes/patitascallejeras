@@ -1,17 +1,27 @@
 import { getRandomEmoji } from "../utils/getRandomEmoji";
 import { Container, Box, Button, Typography, IconButton } from "@mui/material";
-
+import { useContext } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
 import ItemDetailList from "../components/ItemDetailList/ItemDetailList";
+import { AppContext } from "../context/AppContext";
+import fallbackImage from "../assets/imgLogo.png";
 
 const Adoptions = () => {
   const navigate = useNavigate();
+  const { savePetId, savePetName, savePetPhotoUrl } = useContext(AppContext);
+  const handleAnonimusAdoption = () => {
+    savePetId(9999);
+    savePetName('tu futura mascota');
+    savePetPhotoUrl(fallbackImage);
+    console.log('handleAnonimusAdoption');
+    
+    navigate("/adoption");
+  };
 
   const handleAddAdoption = () => {
     navigate("/add-pet");
   };
-
   return (
     <Container>
       <Box
@@ -60,7 +70,7 @@ const Adoptions = () => {
             <Button
               variant="outlined"
               color="primary"
-              onClick={handleAddAdoption}
+              onClick={handleAnonimusAdoption}
               sx={{ width: { xs: "100%", sm: "auto" } }} // Botón de ancho completo en móvil
             >
               No me decido
