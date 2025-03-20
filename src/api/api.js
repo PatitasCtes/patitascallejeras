@@ -138,7 +138,12 @@ const API_FORM_BASE_URL = "https://patitas-forms.netlify.app/.netlify/functions/
 // Obtener formulario por tipo
 export const fetchForm = async (formType) => {
     try {
-        const response = await fetch(`${API_FORM_BASE_URL}/form/${formType}`);
+        const response = await fetch(`${API_FORM_BASE_URL}/form/${formType}`, {
+            headers: {
+                "Access-Control-Allow-Origin": "https://patitas-forms.netlify.app"
+              }
+            
+        });
         if (!response.ok) {
             throw new Error("Error fetching form");
         }
@@ -167,7 +172,12 @@ export const fetchFormById = async (formId) => {
 export const fetchForms = async (filters = {}) => {
     try {
         const queryParams = new URLSearchParams(filters).toString();
-        const response = await fetch(`${API_FORM_BASE_URL}/forms?${queryParams}`);
+        const response = await fetch(`${API_FORM_BASE_URL}/forms?${queryParams}`, {
+            headers: {
+                "Access-Control-Allow-Origin": "https://patitas-forms.netlify.app"
+              }
+            
+        });
         if (!response.ok) {
             throw new Error("Error fetching forms");
         }
@@ -268,6 +278,21 @@ export const deleteFormById = async (formId) => {
         return await response.json();
     } catch (error) {
         console.error("Error deleting form:", error);
+        throw error;
+    }
+};
+
+// Buscar formularios por coincidencia
+export const searchForms = async (searchString) => {
+    try {
+        const queryParams = new URLSearchParams({ searchString }).toString();
+        const response = await fetch(`${API_FORM_BASE_URL}/forms/search?${queryParams}`);
+        if (!response.ok) {
+            throw new Error("Error searching forms");
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error searching forms:", error);
         throw error;
     }
 };
