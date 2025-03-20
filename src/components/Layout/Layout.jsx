@@ -13,6 +13,11 @@ const Layout = ({ children, showHeaderFooter = true }) => {
             sm: 3, // Padding intermedio para tablets
             md: 5, // Padding completo para pantallas grandes (escritorio)
           },
+          minHeight:{
+            xs: '85vh', // Menor padding para pantallas pequeñas (móviles)
+            sm: '75vh', // Padding intermedio para tablets
+            md: '75vh', // Padding completo para pantallas grandes (escritorio)
+          } 
         }}
       >
         {children}

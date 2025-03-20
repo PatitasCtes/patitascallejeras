@@ -146,7 +146,7 @@ const ResumeAdoption = () => {
           Cancelar
         </Button>
         <Button variant="contained" color="primary" onClick={handleConfirm}>
-          Adoptar
+          Enviar
         </Button>
       </Box>
 
