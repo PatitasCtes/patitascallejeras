@@ -8,8 +8,8 @@ import {
   Box,
   IconButton,
 } from "@mui/material";
-import PetsIcon from "@mui/icons-material/Pets";
 import DeleteIcon from "@mui/icons-material/Delete";
+import RestoreIcon from "@mui/icons-material/Restore";
 import { useNavigate } from "react-router-dom";
 
 const FormList = ({ forms, updateFormStatus }) => {
@@ -20,8 +20,13 @@ const FormList = ({ forms, updateFormStatus }) => {
     console.log("Ver formulario con ID:", formId);
   };
 
-  const handleArchiveForm = (formId) => {
-    updateFormStatus(formId, "Archivado");
+  const handleArchiveForm = (formId, event, formStatus) => {
+    event.stopPropagation(); // Evita que el evento afecte al ListItem
+    if (formStatus === "Archivado") {
+      updateFormStatus(formId, "Revisado");
+    } else {
+      updateFormStatus(formId, "Archivado");
+    }
     console.log("Archivado formulario con ID:", formId);
   };
 
@@ -38,13 +43,18 @@ const FormList = ({ forms, updateFormStatus }) => {
               flexDirection: "column",
               alignItems: "center",
             }}
+            onClick={() => handleViewForm(form.id)} // Ejecuta handleViewForm al hacer clic en el ListItem
             secondaryAction={
               <IconButton
-                onClick={() => handleArchiveForm(form.id)}
+                onClick={(event) => handleArchiveForm(form.id, event, form.status)} // Maneja la acción de archivo
                 aria-label="archive"
                 sx={{ mt: -6 }}
               >
-                <DeleteIcon sx={{ color: form.status === "Archivado" ? "gray" : "primary.main" }} />
+                {form.status === "Archivado" ? (
+                  <RestoreIcon sx={{ color: "gray" }} />
+                ) : (
+                  <DeleteIcon sx={{ color: "primary.main" }} />
+                )}
               </IconButton>
             }
           >
@@ -107,5 +117,4 @@ const FormList = ({ forms, updateFormStatus }) => {
 };
 
 export default FormList;
-
 
