@@ -283,9 +283,9 @@ export const deleteFormById = async (formId) => {
 };
 
 // Buscar formularios por coincidencia
-export const searchForms = async (searchString) => {
+export const searchForms = async (searchString,verArchivados) => {
     try {
-        const queryParams = new URLSearchParams({ searchString }).toString();
+        const queryParams = new URLSearchParams({ searchString, archivados: verArchivados }).toString();
         const response = await fetch(`${API_FORM_BASE_URL}/forms/search?${queryParams}`);
         if (!response.ok) {
             throw new Error("Error searching forms");
