@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { getRandomEmoji } from "../utils/getRandomEmoji";
 import {
   Container,
@@ -9,116 +9,52 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Snackbar,
   Alert,
   TextField,
   IconButton,
 } from "@mui/material";
 import Loader from "../components/Loader/Loader";
 import CloseIcon from "@mui/icons-material/Close";
-import { useNavigate } from "react-router-dom";
 import FormList from "../components/FormList/FormList";
-import {
-  fetchForms,
-  fetchPetsByCriteria,
-  updateForms,
-  searchForms,
-} from "../api/api";
+import { fetchForms, updateForms, searchForms, updateFormById } from "../api/api";
+import { AppContext } from "../context/AppContext";
 
 const Forms = () => {
-  const navigate = useNavigate();
-  const [forms, setForms] = useState([]);
-  const [pets, setPets] = useState([]);
+  const { formsData, updateFormsData } = useContext(AppContext);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [filters, setFilters] = useState(() => {
     const storedFilters = localStorage.getItem("formsFilters");
     return storedFilters
       ? JSON.parse(storedFilters)
-      : { petId: "", orderBy: "" };
+      : { petId: "", orderBy: "", verArchivados: false };
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(() => {
     return localStorage.getItem("formsSearchQuery") || "";
   });
   const [filtersVisible, setFiltersVisible] = useState(false);
 
-  useEffect(() => {
-    const loadFormsAndPets = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [formsData, petsData] = await Promise.all([
-          fetchForms(),
-          fetchPetsByCriteria({ status: "Disponible" }),
-        ]);
-
-        setForms(formsData);
-        setPets(petsData);
-
-        if (searchQuery) {
-          const searchResults = await searchForms(searchQuery);
-          setForms(searchResults);
-        }
-      } catch (err) {
-        setError("Error al cargar los datos. Intenta nuevamente.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFormsAndPets();
-  }, [searchQuery]);
-
-  const handleCloseForms = async () => {
-    const { petId } = filters;
-
-    if (petId) {
-      try {
-        await updateForms({ PetId: petId }, { status: "Cerrado" });
-        window.location.reload();
-      } catch (error) {
-        console.error("Error al cerrar los formularios:", error);
-      }
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
     }
-  };
-
-  const handleFilterChange = async (e) => {
-    const { name, value } = e.target;
-    const updatedFilters = { ...filters, [name]: value };
-    setFilters(updatedFilters);
-    localStorage.setItem("formsFilters", JSON.stringify(updatedFilters));
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      let formsData = [];
-      if (name === "petId" && value) {
-        formsData = await fetchForms({ PetId: value });
-      } else {
-        formsData = await fetchForms();
-      }
-
-      setForms(formsData);
-    } catch (err) {
-      setError("Error al aplicar los filtros. Intenta nuevamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-    localStorage.setItem("formsSearchQuery", e.target.value);
+    setSnackbarOpen(false);
   };
 
   const handleSearchSubmit = async () => {
     try {
       setLoading(true);
       setError(null);
+      const searchResults = searchQuery
+        ? await searchForms(searchQuery,filters.verArchivados)
+        : await fetchForms({'archivados': filters.verArchivados});
+      updateFormsData({ ...formsData, forms: searchResults });
 
-      const searchResults = await searchForms(searchQuery);
-      setForms(searchResults);
+      searchQuery && localStorage.setItem("formsFilters", JSON.stringify(searchQuery));
     } catch (err) {
       setError("Error al realizar la búsqueda. Intenta nuevamente.");
     } finally {
@@ -126,14 +62,57 @@ const Forms = () => {
     }
   };
 
-  const filteredForms = forms.sort((a, b) => {
-    if (filters.orderBy === "fechaCreacion") {
-      return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
-    } else if (filters.orderBy === "petId") {
-      return a.petId.toString().localeCompare(b.petId.toString());
+  const updateFormStatus = async (formId, newStatus) => {
+    try {
+      await updateFormById(formId, { status: newStatus });
+      setSnackbarMessage("Estado actualizado con éxito.");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Error al actualizar el estado:", error);
+      setSnackbarMessage("Error al actualizar el estado.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
-    return 0;
-  });
+  };
+
+  const handleCloseForms = async () => {
+    const { petId } = filters;
+    if (petId) {
+      try {
+        await updateForms({ PetId: petId }, { status: "Cerrado" });
+        updateFormsData({
+          ...formsData,
+          forms: formsData.forms.filter((form) => form.petId !== petId),
+        });
+      } catch (error) {
+        console.error("Error al cerrar los formularios:", error);
+      }
+    }
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    const updatedFilters = { ...filters, [name]: value };
+    setFilters(updatedFilters);
+   
+  };
+
+  const filteredForms = formsData.forms
+    .filter((form) => {
+      if (filters.petId && form.petId !== filters.petId) return false;
+      if (!filters.verArchivados && form.status === "Cerrado")
+        return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (filters.orderBy === "fechaCreacion") {
+        return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
+      } else if (filters.orderBy === "petId") {
+        return a.petId.toString().localeCompare(b.petId.toString());
+      }
+      return 0;
+    });
 
   return (
     <Container>
@@ -204,11 +183,15 @@ const Forms = () => {
                 <MenuItem value="">
                   <em>Todos</em>
                 </MenuItem>
-                {pets.map((pet) => (
-                  <MenuItem key={pet.id} value={pet.id}>
-                    {pet.name}
-                  </MenuItem>
-                ))}
+                {formsData.pets.map(
+                  (
+                    pet // Usar formsData.pets
+                  ) => (
+                    <MenuItem key={pet.id} value={pet.id}>
+                      {pet.name}
+                    </MenuItem>
+                  )
+                )}
               </Select>
             </FormControl>
 
@@ -228,15 +211,29 @@ const Forms = () => {
                 <MenuItem value="petId">Mascota</MenuItem>
               </Select>
             </FormControl>
+
+            <FormControl variant="outlined" sx={{ minWidth: 120 }}>
+              <InputLabel id="ver-archivados">Ver Archivados</InputLabel>
+              <Select
+                labelId="ver-archivados"
+                name="verArchivados"
+                value={filters.verArchivados}
+                onChange={handleFilterChange}
+                label="Ver Archivados"
+              >
+                <MenuItem value={false}>
+                  <em>No</em>
+                </MenuItem>
+                <MenuItem value={true}>
+                  <em>Sí</em>
+                </MenuItem>
+              </Select>
+            </FormControl>
+
             <TextField
               label="Buscar"
               value={searchQuery}
-              onChange={handleSearchChange}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearchSubmit();
-                }
-              }}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Button variant="contained" onClick={handleSearchSubmit}>
               Buscar
@@ -251,16 +248,32 @@ const Forms = () => {
         </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert>
-      ) : filteredForms.length === 0 ? (
+      ) : filteredForms.length === 0 && !loading ? (
         <Typography variant="body1">
           No se encontraron formularios de adopción.
         </Typography>
       ) : (
-        <FormList forms={filteredForms} />
+        <FormList forms={filteredForms} updateFormStatus={updateFormStatus} />
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
 export default Forms;
+
 

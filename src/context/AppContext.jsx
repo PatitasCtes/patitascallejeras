@@ -1,84 +1,101 @@
 import React, { createContext, useState, useEffect } from "react";
-import { fetchForm } from "../api/api";
+import { fetchForm, fetchForms, fetchPetsByCriteria } from "../api/api"; // Importar fetchForms y fetchPetsByCriteria
 
-// Crear el contexto
 export const AppContext = createContext();
 
-// Crear el proveedor del contexto
 export const AppProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // Estado de ejemplo
-  const [petId, setPetId] = useState(null);
-  const [petName, setpetName] = useState(null);
-  const [petPhotoUrl, setpetPhotoUrl] = useState(null);
-  const [formAdoption, setformAdoption] = useState(null); // Inicializar como null
-  const [answerNumber, setAnswerNumber] = useState(0); // Inicializar como null
-  const [formAdoptionAswered, setFormAdoptionAswered] = useState(
-    initialFormAdoptionAswered
-  ); // Inicializar como null
-  useEffect(() => {
-    // Cargar los datos de adopción
-    const loadFormAdoption = async () => {
-      try {
-        const data = await fetchForm("adopcion"); // Resuelve la promesa
-        setformAdoption(data); // Almacena el objeto completo en el estado
-      } catch (error) {
-        console.error("Error fetching adoption form:", error);
-      }
+    const [user, setUser] = useState(null);
+    const [petId, setPetId] = useState(null);
+    const [petName, setpetName] = useState(null);
+    const [petPhotoUrl, setpetPhotoUrl] = useState(null);
+    const [formAdoption, setformAdoption] = useState(null);
+    const [answerNumber, setAnswerNumber] = useState(0);
+    const [formAdoptionAswered, setFormAdoptionAswered] = useState(initialFormAdoptionAswered);
+    const [formsData, setFormsData] = useState({ forms: [], pets: [] }); // Nuevo estado para formularios y mascotas
+
+    useEffect(() => {
+        const loadFormAdoption = async () => {
+            try {
+                const data = await fetchForm("adopcion");
+                setformAdoption(data);
+            } catch (error) {
+                console.error("Error fetching adoption form:", error);
+            }
+        };
+
+        loadFormAdoption();
+        loadInitialData(); // Cargar datos iniciales
+    }, []);
+
+    const loadInitialData = async () => {
+        try {
+            const [forms, pets] = await Promise.all([
+                fetchForms(),
+                fetchPetsByCriteria({ status: "Disponible" })
+            ]);
+            setFormsData({ forms, pets });
+        } catch (error) {
+            console.error("Error loading initial data:", error);
+        }
     };
 
-    loadFormAdoption();
-  }, []); // Se ejecuta solo una vez al montar el componente
+    const updateFormsData = (newData) => {
+        setFormsData(newData);
+    };
 
-  const login = (userData) => {
-    setUser(userData);
-  };
+    const login = (userData) => {
+        setUser(userData);
+    };
 
-  const logout = () => {
-    setUser(null);
-  };
+    const logout = () => {
+        setUser(null);
+    };
 
-  const savePetId = (id) => {
-    setPetId(id);
-  };
+    const savePetId = (id) => {
+        setPetId(id);
+    };
 
-  const savePetName = (name) => {
-    setpetName(name);
-  };
+    const savePetName = (name) => {
+        setpetName(name);
+    };
 
-  const savePetPhotoUrl = (url) => {
-    setpetPhotoUrl(url);
-  };
+    const savePetPhotoUrl = (url) => {
+        setpetPhotoUrl(url);
+    };
 
-  const saveFormAdoption = (data) => {
-    setformAdoption(data);
-  };
+    const saveFormAdoption = (data) => {
+        setformAdoption(data);
+    };
 
-  const saveFormAdoptionAswered = (data) => {
-    setFormAdoptionAswered(data);
-  };
-  return (
-    <AppContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        petId,
-        petName,
-        petPhotoUrl,
-        savePetId,
-        savePetName,
-        savePetPhotoUrl,
-        formAdoption,
-        saveFormAdoption,
-        formAdoptionAswered,
-        saveFormAdoptionAswered,
-        answerNumber,
-        setAnswerNumber,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
-  );
+    const saveFormAdoptionAswered = (data) => {
+        setFormAdoptionAswered(data);
+    };
+
+    return (
+        <AppContext.Provider
+            value={{
+                user,
+                login,
+                logout,
+                petId,
+                petName,
+                petPhotoUrl,
+                savePetId,
+                savePetName,
+                savePetPhotoUrl,
+                formAdoption,
+                saveFormAdoption,
+                formAdoptionAswered,
+                saveFormAdoptionAswered,
+                answerNumber,
+                setAnswerNumber,
+                formsData, // Agregar formsData al contexto
+                updateFormsData, // Agregar updateFormsData al contexto
+            }}
+        >
+            {children}
+        </AppContext.Provider>
+    );
 };
 
 const initialFormAdoptionAswered = {
