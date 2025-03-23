@@ -109,7 +109,7 @@ const Forms = () => {
       if (filters.orderBy === "fechaCreacion") {
         return new Date(b.fechaCreacion) - new Date(a.fechaCreacion);
       } else if (filters.orderBy === "petId") {
-        return a.petId.toString().localeCompare(b.petId.toString());
+        return a.PetId.toString().localeCompare(b.PetId.toString());
       }
       return 0;
     });
@@ -155,10 +155,10 @@ const Forms = () => {
           </Box>
         </Box>
         <IconButton
-          sx={{ display: { xs: "block", sm: "none" } }}
+          sx={{ display: { xs: "block", sm: "block" , md: "block", lg: "block"} }}
           onClick={() => setFiltersVisible(!filtersVisible)}
         >
-          <Typography>Filtros</Typography>
+          {filtersVisible ? <CloseIcon /> :  <Typography>Filtros</Typography>}
         </IconButton>
 
         {filtersVisible && (

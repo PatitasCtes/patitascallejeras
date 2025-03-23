@@ -33,7 +33,7 @@ const ItemDetail = ({ item }) => {
     feelingsWithDogs,
     feelingsWithCats,
   } = item;
-
+  const isLoggedIn = localStorage.getItem("uid");
   const coverPhoto = book.find((photo) => photo.isCoverPhoto)?.url || "";
 
   const [popupOpen, setPopupOpen] = useState(false);
@@ -69,11 +69,13 @@ const ItemDetail = ({ item }) => {
   const { savePetId } = useContext(AppContext);
 
   const handleEdit = () => {
+    if (!isLoggedIn) return;
     savePetId(item.id);
     navigate(`/edit-pet`);
   };
 
   const handleDelete = async () => {
+    if (!isLoggedIn) return;
     try {
       await deletePetById(id);
       console.log("Eliminado correctamente:", id);
@@ -156,12 +158,17 @@ const ItemDetail = ({ item }) => {
             endIcon={<CottageIcon />}
             onClick={handleOpenPopup}
           ></Button>
-          <IconButton color="primary" onClick={handleEdit}>
-            <EditIcon />
-          </IconButton>
-          <IconButton color="error" onClick={handleDelete}>
-            <DeleteIcon />
-          </IconButton>
+
+          {isLoggedIn && (
+            <>
+              <IconButton color="primary" onClick={handleEdit}>
+                <EditIcon />
+              </IconButton>
+              <IconButton color="error" onClick={handleDelete}>
+                <DeleteIcon />
+              </IconButton>
+            </>
+          )}
         </CardActions>
       </Card>
       <ItemPopup open={popupOpen} onClose={handleClosePopup} item={item} />

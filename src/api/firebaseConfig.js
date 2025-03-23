@@ -3,15 +3,17 @@ import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { getFirestore, doc, setDoc } from "firebase/firestore"; // Importar doc y setDoc desde firestore
 
+
 const firebaseConfig = {
-    apiKey: "AIzaSyCx8GI5km0guJojFuOb9KDKNSclqFQBhLI",
-    authDomain: "taskban-v1.firebaseapp.com",
-    projectId: "taskban-v1",
-    storageBucket: "taskban-v1.appspot.com",
-    messagingSenderId: "774075443466",
-    appId: "1:774075443466:web:0b1ccf90595264ef8872f3",
-    measurementId: "G-1MCX6F9W86"
+    apiKey: import.meta.env.VITE_API_KEY,
+    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_ID,
+    measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
+
 
 // Inicializa Firebase
 const app = initializeApp(firebaseConfig);
