@@ -95,12 +95,11 @@ const FormList = ({ forms, updateFormStatus }) => {
                   `${form.respuestas[2].respuesta} (${form.PetName}) ${form.status}` ||
                   "Sin nombre de mascota"
                 }
-                secondary={`${form.respuestas[25].respuesta} |  ${
+                secondary={`💼${form.respuestas[25].respuesta} |  ${
                   form.respuestas[1].respuesta
                 } |  ${form.respuestas[4].respuesta} |  ${
                   form.respuestas[9].respuesta
-                } |  ${form.respuestas[6].respuesta} |  ${
-                  form.respuestas[29].respuesta
+                } |🏠  ${form.respuestas[6].respuesta} 
                 } |  ${new Date(form.fechaCreacion).toLocaleString("es-AR", {
                   day: "numeric",
                   month: "long",
