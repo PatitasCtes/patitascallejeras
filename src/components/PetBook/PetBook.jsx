@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Box, Button, Typography, IconButton, Grid } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { useNavigate } from "react-router-dom"; // Importamos navigate
-import { addBook } from "../../api/api";
+import { addBook, deletePetById } from "../../api/api";
 import uploadImage from "../../utils/uploadImage";
 
 const PetBook = ({ petId }) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [coverPhotoIndex, setCoverPhotoIndex] = useState(0); // Índice de la foto de portada
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
   const navigate = useNavigate(); // Usamos navigate para redirigir
 
   const handleImageChange = (event) => {
@@ -37,6 +38,7 @@ const PetBook = ({ petId }) => {
       // Enviar datos a la API
       await addBook(petId, bookData);
       alert("Fotos subidas correctamente");
+      setIsUploaded(true);
     } catch (error) {
       console.error("Error uploading images:", error);
       alert("Ocurrió un error al subir las fotos.");
@@ -45,11 +47,17 @@ const PetBook = ({ petId }) => {
     }
   };
 
-  const handleCancel = () => {
-    // Borra las imágenes seleccionadas
-    setSelectedImages([]);
-    setCoverPhotoIndex(0); // Resetear la portada seleccionada
-    navigate("/adoptions"); // Redirigir a /adoptions
+  const handleCancel = async () => {
+    try {
+      await deletePetById(petId);
+      console.log("Eliminado correctamente:", petId);
+      // Borra las imágenes seleccionadas
+      setSelectedImages([]);
+      setCoverPhotoIndex(0); // Resetear la portada seleccionada
+      navigate("/adoptions"); // Redirigir a /adoptions
+    } catch (error) {
+      console.error("Error eliminando mascota:", error);
+    }
   };
 
   const handleFinish = () => {
@@ -59,27 +67,29 @@ const PetBook = ({ petId }) => {
   return (
     <Box p={2}>
       <Typography variant="h6" gutterBottom>
-        Agregar fotos
+        {isUploaded ? "Agredado correctamente" : "Agregar fotos"}
       </Typography>
-
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        multiple
-        style={{ display: "none" }}
-        id="upload-button"
-      />
-      <label htmlFor="upload-button">
-        <IconButton
-          color="primary"
-          aria-label="upload pictures"
-          component="span"
-        >
-          <PhotoCamera />
-        </IconButton>
-      </label>
-
+      {!isUploaded && (
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          multiple
+          style={{ display: "none" }}
+          id="upload-button"
+        />
+      )}
+      {!isUploaded && (
+        <label htmlFor="upload-button">
+          <IconButton
+            color="primary"
+            aria-label="upload pictures"
+            component="span"
+          >
+            <PhotoCamera />
+          </IconButton>
+        </label>
+      )}
       {selectedImages.length > 0 && (
         <Box mt={2}>
           <Typography variant="body2" gutterBottom>
@@ -107,16 +117,17 @@ const PetBook = ({ petId }) => {
           </Grid>
         </Box>
       )}
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleUploadImages}
-        disabled={isUploading || selectedImages.length === 0}
-        sx={{ mt: 2 }}
-      >
-        {isUploading ? "Subiendo..." : "Subir fotos"}
-      </Button>
+      {!isUploaded && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleUploadImages}
+          disabled={isUploading || selectedImages.length === 0}
+          sx={{ mt: 2 }}
+        >
+          {isUploading ? "Subiendo..." : "Subir fotos"}
+        </Button>
+      )}
 
       <Box mt={2}>
         <Button
@@ -132,7 +143,7 @@ const PetBook = ({ petId }) => {
           variant="contained"
           color="primary"
           onClick={handleFinish} // Acción de finalizar
-          disabled={isUploading || selectedImages.length === 0}
+          disabled={!isUploaded}
         >
           Finalizar
         </Button>

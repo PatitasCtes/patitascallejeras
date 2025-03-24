@@ -292,18 +292,18 @@ const AddPet = () => {
               onChange={handleInputChange}
             />
           </Grid>
-
+          {!newPetId && 
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
               Agregar mascota
             </Button>
-          </Grid>
-
+          </Grid>}
+          {!newPetId &&
           <Grid item xs={12}>
             <Button variant="outlined" color="error" onClick={handleCancel}>
               Cancelar
             </Button>
-          </Grid>
+          </Grid>}
         </Grid>
       </form>
 
