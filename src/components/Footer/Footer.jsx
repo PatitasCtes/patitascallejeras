@@ -30,6 +30,16 @@ const Footer = () => {
           color: theme.palette.primary.contrastText,
         }}
       >
+          <Typography
+            variant="body1"
+            component="a"
+            href="https://ematijasevic.com.ar"
+            target="_blank"
+            rel="noopener"
+            sx={{ textDecoration: "none", color: "inherit" }}
+          >
+            &copy; {new Date().getFullYear()} ematijasevic
+          </Typography>
         <Toolbar sx={{ justifyContent: "center" }}>
           <IconButton
             color="inherit"
