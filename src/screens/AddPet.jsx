@@ -12,11 +12,14 @@ import {
   MenuItem,
   Checkbox,
   FormControlLabel,
+  RadioGroup,
+  Radio,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { addPet } from "./../api/api";
 import dayjs from "dayjs"; // Importar dayjs para uso de fechas
 import PetBook from "../components/PetBook/PetBook";
+import PetSizeSelector from "../components/PetSizeSelector/PetSizeSelector"; // Importa tu componente
 
 const AddPet = () => {
   const navigate = useNavigate();
@@ -45,13 +48,10 @@ const AddPet = () => {
     litter: null,
     adopter: null,
     adoptionDate: "",
-    rescueDate: dayjs().toISOString().substring(0, 10), // Uso de dayjs para obtener fecha actual
-    birthdate: "", // birthdate: (age) => {
-    //   const today = dayjs();
-    //   const ageNum = parseInt(age, 10);
-    //   const pastDate = today.subtract(ageNum, "year");
-    //   return pastDate.toISOString().substring(0, 10);
-    // },
+    rescueDate: dayjs().toISOString().substring(0, 10),
+    birthdate: "",
+    size: null, // Para almacenar el peso seleccionado
+    gender: "",
   });
 
   const [newPetId, setNewPetId] = useState(null);
@@ -75,6 +75,13 @@ const AddPet = () => {
     setPetData((prevData) => ({
       ...prevData,
       [name]: e.target.checked,
+    }));
+  };
+
+  const handleSizeSelect = (size) => {
+    setPetData((prevData) => ({
+      ...prevData,
+      size,
     }));
   };
 
@@ -174,136 +181,46 @@ const AddPet = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography gutterBottom>Relación con gatos</Typography>
-            <Slider
-              value={petData.feelingsWithCats}
-              onChange={handleSliderChange("feelingsWithCats")}
-              min={1}
-              max={10}
-              marks
-              valueLabelDisplay="auto"
+            <Typography variant="h6" gutterBottom>
+              Selecciona el tamaño:
+            </Typography>
+            <PetSizeSelector
+              animal={petData.animal.toLowerCase()}
+              onWeightSelect={handleSizeSelect}
+              weight={petData.size}
             />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Observaciones sobre la relación con gatos"
-              name="feelingsWithCatsObs"
-              value={petData.feelingsWithCatsObs}
+            <Typography variant="h6" gutterBottom>
+              Género:
+            </Typography>
+            <RadioGroup
+              row
+              name="gender"
+              value={petData.gender}
               onChange={handleInputChange}
-            />
+            >
+              <FormControlLabel value="Macho" control={<Radio />} label="Macho" />
+              <FormControlLabel value="Hembra" control={<Radio />} label="Hembra" />
+            </RadioGroup>
           </Grid>
 
-          <Grid item xs={12}>
-            <Typography gutterBottom>Relación con perros</Typography>
-            <Slider
-              value={petData.feelingsWithDogs}
-              onChange={handleSliderChange("feelingsWithDogs")}
-              min={1}
-              max={10}
-              marks
-              valueLabelDisplay="auto"
-            />
-          </Grid>
+          {!newPetId && (
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary" type="submit">
+                Agregar mascota
+              </Button>
+            </Grid>
+          )}
 
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Observaciones sobre la relación con perros"
-              name="feelingsWithDogsObs"
-              value={petData.feelingsWithDogsObs}
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography gutterBottom>Relación con personas</Typography>
-            <Slider
-              value={petData.feelingsWithPeople}
-              onChange={handleSliderChange("feelingsWithPeople")}
-              min={1}
-              max={10}
-              marks
-              valueLabelDisplay="auto"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Observaciones sobre la relación con personas"
-              name="feelingsWithPeopleObs"
-              value={petData.feelingsWithPeopleObs}
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={petData.castred}
-                  onChange={handleCheckboxChange("castred")}
-                />
-              }
-              label="Esterilizado"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Observaciones sobre la esterilización"
-              name="castredObs"
-              value={petData.castredObs}
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={petData.vaccinated}
-                  onChange={handleCheckboxChange("vaccinated")}
-                />
-              }
-              label="Vacunado"
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Observaciones sobre la vacunación"
-              name="vaccinatedObs"
-              value={petData.vaccinatedObs}
-              onChange={handleInputChange}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Observaciones generales"
-              name="obs"
-              value={petData.obs}
-              onChange={handleInputChange}
-            />
-          </Grid>
-          {!newPetId && 
-          <Grid item xs={12}>
-            <Button variant="contained" color="primary" type="submit">
-              Agregar mascota
-            </Button>
-          </Grid>}
-          {!newPetId &&
-          <Grid item xs={12}>
-            <Button variant="outlined" color="error" onClick={handleCancel}>
-              Cancelar
-            </Button>
-          </Grid>}
+          {!newPetId && (
+            <Grid item xs={12}>
+              <Button variant="outlined" color="error" onClick={handleCancel}>
+                Cancelar
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </form>
 

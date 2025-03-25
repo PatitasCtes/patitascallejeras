@@ -23,23 +23,27 @@ const Navigationbar = () => {
       title: "Inicio",
       path: "/",
       icon: <HomeIcon />,
+      visible: true,
     },
     {
       title: "Adopciones",
       path: "/adoptions",
       icon: <PetIcon />,
+      visible: true,
     },
     {
       title: "Formularios",
       path: "/forms",
       icon: <DashboardIcon />,
+      visible: isLoggedIn? true : false,
     },
     {
       title: isLoggedIn ? "Perfil" : "Ingresar",
       path: isLoggedIn ? "/profile" : "/login",
       icon: <AccountCircleIcon />,
+      visible: true,
     },
-  ];
+  ].filter((item) => item.visible === true);
   return (
     <>
       <AppBar position="static">
@@ -85,3 +89,4 @@ const Navigationbar = () => {
 };
 
 export default Navigationbar;
+

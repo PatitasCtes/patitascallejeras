@@ -35,7 +35,13 @@ const Login = () => {
         setError("Error al obtener el ID del usuario.");
       }
     } catch (err) {
-      setError(err.message);
+      if (err.code === "auth/invalid-credential") {
+        setError("Usuario o contraseña inválido.");
+      } else if (err.code === "auth/invalid-email") {
+        setError("Correo no válido.");
+      } else {
+        setError(err.message);
+      }
     }
   };
 
@@ -104,3 +110,4 @@ const Login = () => {
 };
 
 export default Login;
+
