@@ -79,10 +79,18 @@ const AddPet = () => {
   };
 
   const handleSizeSelect = (size) => {
-    setPetData((prevData) => ({
-      ...prevData,
-      size,
-    }));
+    if (petData.size === size) {
+      setPetData((prevData) => ({
+        ...prevData,
+        size: null,
+      }));
+    } else {
+      setPetData((prevData) => ({
+        ...prevData,
+        size,
+      }));
+    }
+
   };
 
   const handleSubmit = async (e) => {
@@ -154,14 +162,22 @@ const AddPet = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Patrocinador"
-              name="sponsor"
-              value={petData.sponsor}
-              onChange={handleInputChange}
-              required
-            />
+            <FormControl fullWidth>
+              <InputLabel>Patrocinador</InputLabel>
+              <Select
+                name="sponsor"
+                value={petData.sponsor}
+                onChange={handleInputChange}
+                defaultValue="Flor Esposito"
+                required
+              >
+                <MenuItem value="Flor Esposito">Flor Esposito</MenuItem>
+                <MenuItem value="Flor Salvatierra">Flor Salvatierra</MenuItem>
+                <MenuItem value="Mili Perez">Mili Perez</MenuItem>
+                <MenuItem value="Naty Serranas">Naty Serranas</MenuItem>
+                <MenuItem value="Otro">Otro</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -179,21 +195,22 @@ const AddPet = () => {
               </Select>
             </FormControl>
           </Grid>
+          {petData.animal && (
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Selecciona el tamaño:
+              </Typography>
+              <PetSizeSelector
+                animal={petData.animal.toLowerCase()}
+                onWeightSelect={handleSizeSelect}
+                weight={petData.size}
+              />
+            </Grid>
+          )}
 
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>
-              Selecciona el tamaño:
-            </Typography>
-            <PetSizeSelector
-              animal={petData.animal.toLowerCase()}
-              onWeightSelect={handleSizeSelect}
-              weight={petData.size}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>
-              Género:
+              Sexo:
             </Typography>
             <RadioGroup
               row
@@ -201,8 +218,21 @@ const AddPet = () => {
               value={petData.gender}
               onChange={handleInputChange}
             >
-              <FormControlLabel value="Macho" control={<Radio />} label="Macho" />
-              <FormControlLabel value="Hembra" control={<Radio />} label="Hembra" />
+              <FormControlLabel
+                value="Macho"
+                control={<Radio />}
+                label="Macho ♂️"
+              />
+              <FormControlLabel
+                value="Hembra"
+                control={<Radio />}
+                label="Hembra ♀️"
+              />
+              <FormControlLabel
+                value="Varios"
+                control={<Radio />}
+                label="Varios ⚧️"
+              />
             </RadioGroup>
           </Grid>
 

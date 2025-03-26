@@ -13,10 +13,13 @@ import {
   MenuItem,
   Checkbox,
   FormControlLabel,
+  RadioGroup,
+  Radio
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { fetchPetById, updatePetById } from "../api/api";
 import Loader from "../components/Loader/Loader";
+import PetSizeSelector from "../components/PetSizeSelector/PetSizeSelector";
 
 const EditPet = () => {
   const navigate = useNavigate();
@@ -29,6 +32,7 @@ const EditPet = () => {
       try {
         const pet = await fetchPetById(petId);
         setPetData(pet);
+        console.log(petData);
       } catch (error) {
         console.error("Error al cargar los datos de la mascota:", error);
       }
@@ -43,7 +47,19 @@ const EditPet = () => {
       [name]: value,
     }));
   };
-
+  const handleSizeSelect = (size) => {
+    if (petData.size === size) {
+      setPetData((prevData) => ({
+        ...prevData,
+        size: null,
+      }));
+    } else {
+      setPetData((prevData) => ({
+        ...prevData,
+        size,
+      }));
+    }
+  };
   const handleSliderChange = (name) => (e, value) => {
     setPetData((prevData) => ({
       ...prevData,
@@ -150,7 +166,45 @@ const EditPet = () => {
               </Select>
             </FormControl>
           </Grid>
-
+          {petData.animal && (
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Selecciona el tamaño:
+              </Typography>
+              <PetSizeSelector
+                animal={petData.animal.toLowerCase()}
+                onWeightSelect={handleSizeSelect}
+                weight={petData.size}
+              />
+            </Grid>
+          )}
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>
+              Género:
+            </Typography>
+            <RadioGroup
+              row
+              name="gender"
+              value={petData.gender}
+              onChange={handleInputChange}
+            >
+              <FormControlLabel
+                value="Macho"
+                control={<Radio />}
+                label="Macho ♂️"
+              />
+              <FormControlLabel
+                value="Hembra"
+                control={<Radio />}
+                label="Hembra ♀️"
+              />
+              <FormControlLabel
+                value="Varios"
+                control={<Radio />}
+                label="Varios ⚧️"
+              />
+            </RadioGroup>
+          </Grid>
           <Grid item xs={12}>
             <Typography gutterBottom>Relación con gatos</Typography>
             <Slider
@@ -169,6 +223,50 @@ const EditPet = () => {
               label="Observaciones sobre la relación con gatos"
               name="feelingsWithCatsObs"
               value={petData.feelingsWithCatsObs || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography gutterBottom>Relación con perros</Typography>
+            <Slider
+              value={petData.feelingsWithDogs || 5}
+              onChange={handleSliderChange("feelingsWithDogs")}
+              min={1}
+              max={10}
+              marks
+              valueLabelDisplay="auto"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la relación con perros"
+              name="feelingsWithDogsObs"
+              value={petData.feelingsWithDogsObs || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography gutterBottom>Relación con Personas</Typography>
+            <Slider
+              value={petData.feelingsWithPersonas || 5}
+              onChange={handleSliderChange("feelingsWithPeople")}
+              min={1}
+              max={10}
+              marks
+              valueLabelDisplay="auto"
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Observaciones sobre la relación con personas"
+              name="feelingsWithPeopleObs"
+              value={petData.feelingsWithPeopleObs || ""}
               onChange={handleInputChange}
             />
           </Grid>
@@ -228,8 +326,10 @@ const EditPet = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" type="submit">
-              Actualizar mascota
+            <Button variant="outlined" color="secondary" onClick={() => navigate("/adoptions")}>
+              Cancelar
+            </Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button variant="contained" color="primary" type="submit">
+              Actualizar
             </Button>
           </Grid>
         </Grid>

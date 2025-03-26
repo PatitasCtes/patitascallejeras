@@ -7,6 +7,8 @@ import {
   Typography,
   CardContent,
   IconButton,
+  Chip,
+  Box,
 } from "@mui/material";
 import CottageIcon from "@mui/icons-material/Cottage";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -18,6 +20,7 @@ import { deletePetById } from "../../api/api";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import fallbackImage from "../../assets/imgLogo.png";
+import PetSizeSelector from "../PetSizeSelector/PetSizeSelector";
 
 const ItemDetail = ({ item }) => {
   const {
@@ -32,6 +35,8 @@ const ItemDetail = ({ item }) => {
     feelingsWithPeople,
     feelingsWithDogs,
     feelingsWithCats,
+    gender,
+    size,
   } = item;
   const isLoggedIn = localStorage.getItem("uid");
   const coverPhoto = book.find((photo) => photo.isCoverPhoto)?.url || "";
@@ -45,6 +50,29 @@ const ItemDetail = ({ item }) => {
       JSON.parse(localStorage.getItem("savedItemIds")) || [];
     setSavedItemIds(storedItemIds);
   }, []);
+
+  let displayText = "";
+
+  if (gender === "Varios") {
+    const animalPlural = animal === "Dog" ? "perritos" : "gatitos";
+    displayText = `Somos ${animalPlural}. ${
+      castred ? "Castrados" : "Sin castrar"
+    }.`;
+  } else {
+    const animalSingular =
+      animal === "Dog"
+        ? gender === "Macho"
+          ? "Perro"
+          : "Perra"
+        : gender === "Macho"
+        ? "Gato"
+        : "Gata";
+    displayText = `Soy ${
+      gender === "Macho" ? "un" : "una"
+    } ${animalSingular}. ${
+      castred ? (gender === "Macho" ? "Castrado" : "Castrada") : "Sin castrar"
+    }.`;
+  }
 
   const handleOpenPopup = () => {
     setPopupOpen(true);
@@ -97,31 +125,43 @@ const ItemDetail = ({ item }) => {
           image={loadedImages[petUID] ? coverPhoto : fallbackImage}
           height="200"
           alt="Item cover"
-          onLoad={() => {
-            handleImageLoad(petUID);
-          }}
-          onError={() => {
-            setLoadedImages((prev) => ({ ...prev, [petUID]: false }));
-          }}
+          onLoad={() => handleImageLoad(petUID)}
+          onError={() =>
+            setLoadedImages((prev) => ({ ...prev, [petUID]: false }))
+          }
         />
 
         <CardContent>
           <Typography
-            sx={{ fontSize: 24 }}
+            sx={{ fontSize: 24, marginRight: 1 }}
             color="text.primary"
             gutterBottom
             align="center"
           >
             {name}
           </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
+          >
+            <Chip
+              label={breed}
+              color="primary"
+              sx={{ marginBottom: 1, fontSize: 12 }}
+            />
+
+            <PetSizeSelector animal={animal.toLowerCase()} weight={size} />
+          </Box>
           <Typography
             ml={1}
             sx={{ fontSize: 14 }}
             color="text.secondary"
             gutterBottom
           >
-            Soy un {animal} de raza {breed}.{" "}
-            {castred ? "Castrado" : "Sin castrar"}.
+            {displayText}
           </Typography>
           <Typography
             ml={1}
@@ -130,15 +170,6 @@ const ItemDetail = ({ item }) => {
             gutterBottom
           >
             Descripción: {description}
-          </Typography>
-          <Typography
-            ml={1}
-            sx={{ fontSize: 14 }}
-            color="text.secondary"
-            gutterBottom
-          >
-            Relación con personas: {feelingsWithPeople}/10 perros:{" "}
-            {feelingsWithDogs}/10 gatos: {feelingsWithCats}/10.
           </Typography>
         </CardContent>
         <CardActions sx={{ justifyContent: "space-evenly" }}>

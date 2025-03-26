@@ -9,6 +9,7 @@ import fallbackImage from "../assets/imgLogo.png";
 
 const Adoptions = () => {
   const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem("uid");
   const { savePetId, savePetName, savePetPhotoUrl } = useContext(AppContext);
   const handleAnonimusAdoption = () => {
     savePetId(9999);
@@ -60,13 +61,13 @@ const Adoptions = () => {
               gap: 1, // Espaciado entre botones
             }}
           >
-            <IconButton
+            {isLoggedIn && (<IconButton
               color="primary"
               onClick={handleAddAdoption}
               sx={{ marginRight: { sm: 1 }, margin: { xs: "0 auto", sm: "0" } }} // Centrado en móvil
             >
               <AddIcon />
-            </IconButton>
+            </IconButton>)}
             <Button
               variant="outlined"
               color="primary"
