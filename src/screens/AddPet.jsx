@@ -371,7 +371,7 @@ const AddPet = () => {
         </Grid>
       </form>
 
-      {newPetId && <PetBook petId={newPetId} />}
+      {newPetId && <PetBook petId={newPetId} petName={petData.name} />}
     </Container>
   );
 };

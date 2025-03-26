@@ -3,6 +3,7 @@ import { Box, Button, TextField, Typography } from "@mui/material";
 import { auth } from "../api/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import LoopOk from "../components/LoopOk/LoopOk";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -105,6 +106,7 @@ const Login = () => {
       >
         Registrarse
       </Button>
+      <LoopOk />
     </Box>
   );
 };

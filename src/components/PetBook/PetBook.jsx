@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"; // Importamos navigate
 import { addBook, deletePetById } from "../../api/api";
 import uploadImage from "../../utils/uploadImage";
 
-const PetBook = ({ petId }) => {
+const PetBook = ({ petId , petName}) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [coverPhotoIndex, setCoverPhotoIndex] = useState(0); // Índice de la foto de portada
   const [isUploading, setIsUploading] = useState(false);
@@ -23,7 +23,7 @@ const PetBook = ({ petId }) => {
     try {
       // Subir imágenes y obtener URLs
       const uploadedUrls = await Promise.all(
-        selectedImages.map((img) => uploadImage(img.file, petId))
+        selectedImages.map((img) => uploadImage(img.file, petId, petName))
       );
 
       // Crear datos del "book"

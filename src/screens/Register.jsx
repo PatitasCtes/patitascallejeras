@@ -36,32 +36,6 @@ const Register = () => {
       );
       const user = userCredential.user;
 
-      const newTeamName = `Team-${name}`;
-      const newTeamData = {
-        name: newTeamName,
-        description: `Equipo creado por ${name}`,
-        createdDate: new Date().toISOString(),
-        quantityMembers: 1,
-        isActive: true,
-      };
-
-      const teamResponse = await fetch(
-        "https://taskban-team.netlify.app/.netlify/functions/server/teams",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newTeamData),
-        }
-      );
-
-      if (!teamResponse.ok) {
-        throw new Error("No se pudo crear el equipo.");
-      }
-
-      const teamResult = await teamResponse.json();
-      const finalTeamId = teamResult.teamId;
 
       const userData = {
         UID: user.uid,
@@ -69,8 +43,7 @@ const Register = () => {
         email: user.email,
         photoURL: "",
         isAdmin: false,
-        rol: "developer",
-        teamId: finalTeamId,
+        rol: "Rescatista",
         name: name,
         description: description,
       };
@@ -92,7 +65,6 @@ const Register = () => {
 
       // Guardar UID y teamId en localStorage y redirigir
       localStorage.setItem("uid", user.uid);
-      localStorage.setItem("teamId", finalTeamId);
       navigate("/login"); // Redirigir a login
     } catch (err) {
       setError(err.message);

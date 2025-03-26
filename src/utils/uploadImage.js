@@ -6,13 +6,13 @@ import { storage, ref, uploadBytesResumable, getDownloadURL } from "../api/fireb
  * @param {string} profileUid - ID único del perfil para organizar las imágenes.
  * @returns {Promise<string>} - URL de la imagen subida.
  */
-const uploadImage = async (file, profileUid) => {
+const uploadImage = async (file, profileUid, petName) => {
     if (!file) {
         throw new Error("No se proporcionó un archivo válido para subir.");
     }
 
     return new Promise((resolve, reject) => {
-        const imageRef = ref(storage, `profile_images/${profileUid}/${file.name}`);
+        const imageRef = ref(storage, `patitas_images/${petName}_${profileUid}/${file.name}`);
         const uploadTask = uploadBytesResumable(imageRef, file);
 
         uploadTask.on(
