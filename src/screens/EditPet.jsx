@@ -61,10 +61,18 @@ const EditPet = () => {
   };
 
   const handleSizeSelect = (size) => {
-    setPetData((prevData) => ({
-      ...prevData,
-      size,
-    }));
+    if (petData.size === size) {
+      setPetData((prevData) => ({
+        ...prevData,
+        size: null,
+      }));
+    }else{
+
+      setPetData((prevData) => ({
+        ...prevData,
+        size,
+      }));
+    }
   };
 
   const handleSliderChange = (name) => (e, value) => {
