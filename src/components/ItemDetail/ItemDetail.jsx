@@ -132,6 +132,7 @@ const ItemDetail = ({ item }) => {
           image={loadedImages[petUID] ? (coverPhoto || fallbackImage) : fallbackImage}
           height="200"
           alt="Item cover"
+          onClick={handleOpenPopup}
           onLoad={() => handleImageLoad(petUID)}
           onError={() =>
             setLoadedImages((prev) => ({ ...prev, [petUID]: false }))

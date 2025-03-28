@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import './QuestionCard.css';
 import {
   Box,
   Button,
@@ -15,12 +16,7 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
   const [answer, setAnswer] = useState(
     question.tipo === "opcion_multiple" ? [] : ""
   );
-
-  // Limpiar el estado de la respuesta cuando cambie la pregunta
-  // useEffect(() => {
-  //   setAnswer(question.tipo === "opcion_multiple" ? [] : "");
-  // }, [question]);
-
+  const [alert, setAlert] = useState(false);
   const handleInputChange = (e) => {
     setAnswer(e.target.value);
   };
@@ -37,19 +33,22 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
   };
 
   const handleNext = () => {
-    onAnswer(question.id, answer);
-    let nextAnswer = onNext();
-    if (!nextAnswer) {
-      setAnswer(question.tipo === "opcion_multiple" ? [] : "");
-    }else{
-      setAnswer(nextAnswer);
+    if (question.obligatoria && !answer) setAlert(true);
+    else {
+      setAlert(false);
+      onAnswer(question.id, answer);
+      let nextAnswer = onNext();
+      if (!nextAnswer) {
+        setAnswer(question.tipo === "opcion_multiple" ? [] : "");
+      } else {
+        setAnswer(nextAnswer);
+      }
     }
   };
 
   const handlePrevious = () => {
     let valuePrevious = onPrevious();
     setAnswer(valuePrevious);
-   
   };
 
   return (
@@ -64,10 +63,26 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
         overflowY: "auto", // Scroll vertical si excede la altura
       }}
     >
-      <Typography variant="h6" gutterBottom>
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        {question.obligatoria && (
+          <Typography variant="body1" color={"error"} mr={1}>
+            *
+          </Typography>
+        )}
         {question.pregunta}
       </Typography>
-
+      {alert && (
+      <Typography variant="body1" color={"error"} gutterBottom className="tambalea">
+        Pregunta obligatoria
+      </Typography>
+      )}
       {question.tipo === "texto" && (
         <TextField
           fullWidth
