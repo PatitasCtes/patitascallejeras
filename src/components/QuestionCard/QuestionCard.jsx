@@ -47,6 +47,7 @@ const QuestionCard = ({ question, onAnswer, onNext, onPrevious }) => {
   };
 
   const handlePrevious = () => {
+    setAlert(false);
     let valuePrevious = onPrevious();
     setAnswer(valuePrevious);
   };
