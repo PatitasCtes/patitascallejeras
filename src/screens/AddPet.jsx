@@ -281,7 +281,7 @@ const AddPet = () => {
           <Grid item xs={12}>
             <Typography gutterBottom>Relación con Personas</Typography>
             <Slider
-              value={petData.feelingsWithPersonas || 5}
+              value={petData.feelingsWithPeople || 5}
               onChange={handleSliderChange("feelingsWithPeople")}
               min={1}
               max={10}

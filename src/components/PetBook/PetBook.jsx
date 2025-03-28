@@ -3,7 +3,7 @@ import { Box, Button, Typography, IconButton, Grid } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { useNavigate } from "react-router-dom"; // Importamos navigate
 import { addBook, deletePetById } from "../../api/api";
-import uploadImage from "../../utils/uploadImage";
+import {uploadImage} from "../../utils/firebaseImage";
 
 const PetBook = ({ petId , petName}) => {
   const [selectedImages, setSelectedImages] = useState([]);

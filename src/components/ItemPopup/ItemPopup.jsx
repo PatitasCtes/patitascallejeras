@@ -51,7 +51,7 @@ const ItemPopup = ({ open, onClose, item }) => {
                   key={index}
                   src={photo.url}
                   alt={`Cover Slide ${index}`}
-                  style={{ width: "100%", height: "500px" }}
+                  style={{ width: "100%", height: "400px" }}
                 />
               ))}
             </Carousel>

@@ -1,5 +1,8 @@
+import { deleteImage} from "../utils/firebaseImage";
+
+
 const API_BASE_URL = "https://patitas-pets.netlify.app/.netlify/functions/server";
-// const API_BASE_URL = "https://mandalas-backend.netlify.app/.netlify/functions/server";
+
 export const fetchListings = async () => {
     try {
         const response = await fetch(`${API_BASE_URL}/listings`);
@@ -95,16 +98,27 @@ export const updatePetById = async (petId, petData) => {
         throw error;
     }
 };
-
 // Eliminar una mascota por ID
 export const deletePetById = async (petId) => {
     try {
+        // Obtener la información completa de la mascota
+        const pet = await fetchPetById(petId);
+
+        // Asegurarse de que `book` contenga imágenes
+        if (pet.book && pet.book.length > 0) {
+            // Eliminar todas las imágenes asociadas a la mascota
+            await Promise.all(pet.book.map((img) => deleteImage(img.url)));
+        }
+
+        // Eliminar la mascota
         const response = await fetch(`${API_BASE_URL}/pets/${petId}`, {
             method: "DELETE",
         });
+
         if (!response.ok) {
             throw new Error("Error deleting pet");
         }
+
         return await response.json();
     } catch (error) {
         console.error("Error deleting pet:", error);

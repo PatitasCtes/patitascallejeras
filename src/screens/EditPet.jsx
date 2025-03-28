@@ -14,25 +14,37 @@ import {
   Checkbox,
   FormControlLabel,
   RadioGroup,
-  Radio
+  Radio,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  IconButton,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { fetchPetById, updatePetById } from "../api/api";
+import { fetchPetById, updatePetById, addBook } from "../api/api";
+import { deleteImage, uploadImage } from "../utils/firebaseImage";
 import Loader from "../components/Loader/Loader";
 import PetSizeSelector from "../components/PetSizeSelector/PetSizeSelector";
+import DeleteIcon from "@mui/icons-material/Delete";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 const EditPet = () => {
   const navigate = useNavigate();
   const { petId } = useContext(AppContext);
-
+  const [imageToDelete, setImageToDelete] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [petData, setPetData] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [coverPhotoIndex, setCoverPhotoIndex] = useState(0); // Índice de la foto de portada para nuevas subidas
 
   useEffect(() => {
     const fetchPetData = async () => {
       try {
         const pet = await fetchPetById(petId);
         setPetData(pet);
-        console.log(petData);
       } catch (error) {
         console.error("Error al cargar los datos de la mascota:", error);
       }
@@ -47,19 +59,14 @@ const EditPet = () => {
       [name]: value,
     }));
   };
+
   const handleSizeSelect = (size) => {
-    if (petData.size === size) {
-      setPetData((prevData) => ({
-        ...prevData,
-        size: null,
-      }));
-    } else {
-      setPetData((prevData) => ({
-        ...prevData,
-        size,
-      }));
-    }
+    setPetData((prevData) => ({
+      ...prevData,
+      size,
+    }));
   };
+
   const handleSliderChange = (name) => (e, value) => {
     setPetData((prevData) => ({
       ...prevData,
@@ -84,6 +91,71 @@ const EditPet = () => {
     }
   };
 
+  const handleDeleteExistingImage = async () => {
+    if (!imageToDelete) return;
+
+    try {
+      await deleteImage(imageToDelete);
+      setPetData((prevData) => ({
+        ...prevData,
+        book: prevData.book.filter((img) => img.url !== imageToDelete),
+      }));
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error al eliminar la imagen:", error);
+    }
+  };
+
+  const confirmDeleteImage = (imageUrl) => {
+    setImageToDelete(imageUrl);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setImageToDelete(null);
+  };
+
+  const handleImageChange = (event) => {
+    const files = Array.from(event.target.files);
+    const newImages = files.map((file) => ({ file }));
+    setSelectedImages((prev) => [...prev, ...newImages]);
+  };
+
+  const handleUploadNewImages = async () => {
+    setIsUploading(true);
+    try {
+      const uploadedUrls = await Promise.all(
+        selectedImages.map((img) => uploadImage(img.file, petId, petData.name))
+      );
+
+      const newBookEntries = uploadedUrls.map((url) => ({ url, isCoverPhoto: false }));
+
+      setPetData((prevData) => ({
+        ...prevData,
+        book: [...(prevData.book || []), ...newBookEntries],
+      }));
+
+      setSelectedImages([]);
+      setIsUploaded(true);
+      alert("Fotos subidas correctamente");
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert("Ocurrió un error al subir las fotos.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSetCoverPhoto = (imageUrl) => {
+    setPetData((prevData) => ({
+      ...prevData,
+      book: prevData.book.map((img) => ({
+        ...img,
+        isCoverPhoto: img.url === imageUrl,
+      })),
+    }));
+  };
   if (!petData) {
     return <Loader />;
   }
@@ -324,16 +396,154 @@ const EditPet = () => {
               onChange={handleInputChange}
             />
           </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>
+              Fotos de la mascota
+            </Typography>
+            <Grid container spacing={2}>
+              {petData.book &&
+                petData.book.map((img, index) => (
+                  <Grid item xs={4} sm={3} md={2} key={index}>
+                    <Box sx={{ position: 'relative' }}>
+                      <Box
+                        component="img"
+                        src={img.url}
+                        alt={`Preview ${index}`}
+                        sx={{
+                          display: 'block',
+                          width: "100%",
+                          height: "auto",
+                          borderRadius: 1,
+                          boxShadow: 2,
+                          border: img.isCoverPhoto ? "2px solid green" : "none",
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleSetCoverPhoto(img.url)}
+                      ></Box>
+                        {img.isCoverPhoto && (
+                          <Typography
+                            sx={{
+                              position: 'absolute',
+                              top: 5,
+                              left: 5,
+                              color: 'white',
+                              bgcolor: 'rgba(0, 0, 0, 0.6)',
+                              borderRadius: '4px',
+                              padding: '2px 4px',
+                              fontSize: '0.8rem',
+                            }}
+                          >
+                            Portada
+                          </Typography>
+                        )}
+                      
+                      <IconButton
+                        onClick={() => confirmDeleteImage(img.url)}
+                        color="error"
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          right: 0,
+                          zIndex: 1,
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                ))}
+            </Grid>
+          </Grid>
 
           <Grid item xs={12}>
-            <Button variant="outlined" color="secondary" onClick={() => navigate("/adoptions")}>
+            <Typography variant="h6" gutterBottom>
+              Subir nuevas fotos
+            </Typography>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              multiple
+              style={{ display: "none" }}
+              id="upload-button"
+            />
+            <label htmlFor="upload-button">
+              <IconButton
+                color="primary"
+                aria-label="upload pictures"
+                component="span"
+              >
+                <PhotoCamera />
+              </IconButton>
+              <Typography variant="body1" sx={{ ml: 1 }}>
+                Seleccionar fotos
+              </Typography>
+            </label>
+            {selectedImages.length > 0 && (
+              <Box mt={2}>
+                <Typography variant="body2" gutterBottom>
+                  Vista previa de nuevas fotos
+                </Typography>
+                <Grid container spacing={2}>
+                  {selectedImages.map((img, index) => (
+                    <Grid item xs={4} sm={3} md={2} key={index}>
+                      <Box
+                        component="img"
+                        src={URL.createObjectURL(img.file)}
+                        alt={`Preview ${index}`}
+                        sx={{
+                          width: "100%",
+                          height: "auto",
+                          borderRadius: 1,
+                          boxShadow: 2,
+                        }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleUploadNewImages}
+              disabled={isUploading || selectedImages.length === 0}
+              sx={{ mt: 2 }}
+            >
+              {isUploading ? "Subiendo..." : "Subir fotos seleccionadas"}
+            </Button>
+          </Grid>
+
+
+          <Grid item xs={12}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => navigate("/adoptions")}
+            >
               Cancelar
-            </Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Button variant="contained" color="primary" type="submit">
+            </Button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <Button variant="contained" color="primary" type="submit">
               Actualizar
             </Button>
           </Grid>
         </Grid>
       </form>
+        {/* Diálogo de confirmación de eliminación */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>
+          ¿Estás seguro de que deseas eliminar esta imagen?
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleDeleteExistingImage} color="primary">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

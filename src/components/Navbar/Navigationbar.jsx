@@ -57,7 +57,7 @@ const Navigationbar = () => {
             <MenuIcon />
           </IconButton>
           <a href="/">
-            <img src="/logo-arg.png" width={50} alt="Logo"></img>
+            <img src="/logo-arg.png" width={50} alt="Logo" style={{ borderRadius: "50%" }}></img>
           </a>
           <Typography variant="h6" pl={3} flexGrow={1}>
             Patitas Callejeras 🤍

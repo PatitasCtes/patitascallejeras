@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { getFirestore, doc, setDoc } from "firebase/firestore"; // Importar doc y setDoc desde firestore
 
 
@@ -21,4 +21,4 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 const db = getFirestore(app);
 
-export { auth, storage, db, ref, uploadBytesResumable, getDownloadURL, doc, setDoc };
+export { auth, storage, db, ref, uploadBytesResumable, getDownloadURL, doc, setDoc, deleteObject };

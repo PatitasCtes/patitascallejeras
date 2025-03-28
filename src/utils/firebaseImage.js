@@ -1,4 +1,4 @@
-import { storage, ref, uploadBytesResumable, getDownloadURL } from "../api/firebaseConfig";
+import { storage, ref, uploadBytesResumable, getDownloadURL, deleteObject  } from "../api/firebaseConfig";
 
 /**
  * Subir imagen a Firebase Storage y obtener URL.
@@ -40,4 +40,26 @@ const uploadImage = async (file, profileUid, petName) => {
     });
 };
 
-export default uploadImage;
+ 
+
+/**
+ * Eliminar una imagen de Firebase Storage.
+ * @param {string} filePath - Ruta completa de la imagen en el almacenamiento.
+ * @returns {Promise<void>} - Promesa que se resuelve si la imagen se elimina correctamente.
+ */
+const deleteImage = async (filePath) => {
+    if (!filePath) {
+        throw new Error("No se proporcionó una ruta válida para eliminar.");
+    }
+
+    try {
+        const imageRef = ref(storage, filePath);
+        await deleteObject(imageRef);
+        console.log("Imagen eliminada exitosamente:", filePath);
+    } catch (error) {
+        console.error("Error al eliminar la imagen:", error);
+        throw error;
+    }
+};
+
+export { uploadImage, deleteImage };

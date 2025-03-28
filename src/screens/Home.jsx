@@ -1,5 +1,16 @@
-import React from "react";
-import { Box, Typography, CardMedia, useMediaQuery, Grid ,IconButton} from "@mui/material";
+import React, { useState } from "react";
+import './Home.css';
+
+import {
+  Box,
+  Typography,
+  CardMedia,
+  useMediaQuery,
+  Grid,
+  IconButton,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import PaymentIcon from "@mui/icons-material/Payment";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import Carousel from "react-material-ui-carousel";
@@ -15,9 +26,16 @@ import h9 from "../assets/home-images/h9.jpg";
 import h10 from "../assets/home-images/h10.jpg";
 
 const Home = () => {
-  // Rutas de las imágenes
+  const [copied, setCopied] = useState(false); // Estado para el mensaje
   const images = [h1, h2, h3, h4, h5, h6, h7, h8, h9, h10];
   const isSmallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+
+  // Función para copiar el alias al portapapeles
+  const handleCopy = () => {
+    navigator.clipboard.writeText("Patitas.callej").then(() => {
+      setCopied(true); // Mostrar mensaje
+    });
+  };
 
   return (
     <Box
@@ -40,12 +58,7 @@ const Home = () => {
         Rescate de animales 💜
       </Typography>
 
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
+      <Box sx={{ display: "flex", alignItems: "center" }}>
         <Typography
           variant="h6"
           gutterBottom
@@ -63,38 +76,55 @@ const Home = () => {
           <InstagramIcon />
         </IconButton>
       </Box>
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          mt: 3,
-        }}
-      >
-        <PaymentIcon sx={{ mr: 1, color: "primary.main" }} />
-        <Typography variant="h6" sx={{ color: "primary.main" }}>
-          <a
+
+      <Box sx={{ display: "flex",flexDirection: "column", alignItems: "center", mt: 3 }}>
+      
+        <Typography
+          id="alias"
+          variant="h7"
+          sx={{ color: "primary.main", cursor: "pointer" }}
+          onClick={handleCopy} // Agregar función de copia
+        >
+          ALIAS: PATITAS.CALLEJ
+        </Typography>
+        <a
             href="https://www.mercadopago.com.ar/checkout/v1/payment/redirect/474bcf57-735f-4e17-be92-1b64e480c2a0/payment-option-form-v2/?source=link&preference-id=213470304-0a9a9297-f8a0-4a8f-a09a-af69d41b6a22&router-request-id=3cb65f91-4c30-48df-88a5-b773aff1e6b1&p=455ca0cfc7deb8c75dd985784eb32fdf"
             target="_blank"
             rel="noopener noreferrer"
             style={{ textDecoration: "none", color: "inherit" }}
           >
-            Nos puedes ayudar a través de Mercado Pago
+          <div className="tambalea">
+          <PaymentIcon sx={{ mr: 1, color: "primary.main" }} />
+          </div>
           </a>
-        </Typography>
       </Box>
+
       <CarouselHome isSmallScreen={isSmallScreen} images={images} />
+
       <Typography
         variant="h6"
         gutterBottom
-        sx={{ mb: 3,mt: 3, color: "GrayText.main" , fontSize: 15}}
+        sx={{ mb: 3, mt: 3, color: "GrayText.main", fontSize: 15 }}
       >
         Te gustaria que tu mascota aparezca aquí? Envianos su foto a nuestras
         redes 💜
       </Typography>
+
+      {/* Mensaje de confirmación */}
+      <Snackbar
+        open={copied}
+        autoHideDuration={3000}
+        onClose={() => setCopied(false)}
+      >
+        <Alert onClose={() => setCopied(false)} severity="success" sx={{ width: '100%' }}>
+          Alias copiado al portapapeles!
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
 
+// Componente CarouselHome (sin cambios)
 const CarouselHome = ({ isSmallScreen, images }) => {
   return (
     <>
@@ -102,7 +132,7 @@ const CarouselHome = ({ isSmallScreen, images }) => {
         <Box
           sx={{
             width: 150,
-            maxheight: 300,
+            maxHeight: 300,
             height: 200,
             position: "relative",
             borderRadius: 2,
@@ -135,7 +165,7 @@ const CarouselHome = ({ isSmallScreen, images }) => {
               <Box
                 sx={{
                   width: 150,
-                  maxheight: 300,
+                  maxHeight: 300,
                   height: 200,
                   position: "relative",
                   borderRadius: 2,
@@ -173,4 +203,5 @@ const CarouselHome = ({ isSmallScreen, images }) => {
     </>
   );
 };
+
 export default Home;

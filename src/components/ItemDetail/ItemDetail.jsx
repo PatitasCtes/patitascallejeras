@@ -9,6 +9,11 @@ import {
   IconButton,
   Chip,
   Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import CottageIcon from "@mui/icons-material/Cottage";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
@@ -32,9 +37,6 @@ const ItemDetail = ({ item }) => {
     breed,
     book,
     animal,
-    feelingsWithPeople,
-    feelingsWithDogs,
-    feelingsWithCats,
     gender,
     size,
   } = item;
@@ -44,6 +46,7 @@ const ItemDetail = ({ item }) => {
   const [popupOpen, setPopupOpen] = useState(false);
   const [savedItemIds, setSavedItemIds] = useState([]);
   const [loadedImages, setLoadedImages] = useState({});
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   useEffect(() => {
     const storedItemIds =
@@ -82,6 +85,7 @@ const ItemDetail = ({ item }) => {
     setPopupOpen(false);
   };
 
+
   const handleSave = () => {
     const actualSavedItemsIds =
       JSON.parse(localStorage.getItem("savedItemIds")) || [];
@@ -117,12 +121,15 @@ const ItemDetail = ({ item }) => {
     setLoadedImages((prev) => ({ ...prev, [imageId]: true }));
   };
 
+  const openConfirmDialog = () => setConfirmDialogOpen(true);
+  const closeConfirmDialog = () => setConfirmDialogOpen(false);
+
   return (
     <>
       <Card sx={{ maxWidth: 345, margin: "auto" }}>
         <CardMedia
           component="img"
-          image={loadedImages[petUID] ? coverPhoto : fallbackImage}
+          image={loadedImages[petUID] ? (coverPhoto || fallbackImage) : fallbackImage}
           height="200"
           alt="Item cover"
           onLoad={() => handleImageLoad(petUID)}
@@ -195,7 +202,7 @@ const ItemDetail = ({ item }) => {
               <IconButton color="primary" onClick={handleEdit}>
                 <EditIcon />
               </IconButton>
-              <IconButton color="error" onClick={handleDelete}>
+              <IconButton color="error" onClick={openConfirmDialog}>
                 <DeleteIcon />
               </IconButton>
             </>
@@ -203,6 +210,24 @@ const ItemDetail = ({ item }) => {
         </CardActions>
       </Card>
       <ItemPopup open={popupOpen} onClose={handleClosePopup} item={item} />
+      {/* Dialogo de confirmación */}
+      <Dialog open={confirmDialogOpen} onClose={closeConfirmDialog}>
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Estás seguro de que deseas eliminar esta mascota? Esta acción no se
+            puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeConfirmDialog} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} color="error">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
